@@ -134,9 +134,9 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 <section class="fc"><div class="container"><h2>90 days free. Because we remember what it's like.</h2><p>Built by agents who survived year one the hard way.</p><button class="btn btn-primary btn-lg" onclick="showScreen('auth')">Start your free trial</button><div style="margin-top:14px;font-size:12px;color:var(--ink3)">4 minutes · Website live in 24 hours</div></div></section>
 <div class="lf">Groundwork · Built for new agents, by agents who've been there.</div></div>
 
-<!-- AUTH --><div class="screen" id="screen-auth"><div class="aw"><div class="ac"><div class="al">ground<span>work</span></div><div class="as">Your first year, handled.</div><div class="at"><button class="active" onclick="switchTab('login')">Log in</button><button onclick="switchTab('signup')">Sign up</button></div><div class="ae" id="ae"></div>
+<!-- AUTH --><div class="screen" id="screen-auth"><div class="aw"><div class="ac" style="position:relative"><button onclick="showScreen('landing')" style="position:absolute;top:14px;right:14px;background:none;border:none;cursor:pointer;font-size:20px;color:var(--ink3);line-height:1;padding:4px 8px" title="Close">&#x2715;</button><div class="al">ground<span>work</span></div><div class="as">Your first year, handled.</div><div class="at"><button class="active" onclick="switchTab('login')">Log in</button><button onclick="switchTab('signup')">Sign up</button></div><div class="ae" id="ae"></div>
 <div class="af active" id="f-login"><div class="afl"><label>Email</label><input type="email" id="le" placeholder="jess@groundwork.ai"></div><div class="afl"><label>Password</label><input type="password" id="lp" placeholder="Password"></div><button class="btn btn-primary" style="width:100%;padding:13px;font-size:15px" onclick="doLogin()">Log in</button></div>
-<div class="af" id="f-signup"><div class="afl"><label>First name</label><input id="sf" placeholder="Jess"></div><div class="afl"><label>Email</label><input type="email" id="se" placeholder="you@example.com"></div><div class="afl"><label>Password</label><input type="password" id="sp" placeholder="Create password"><div class="h">At least 6 characters</div></div><div class="afl"><label>Target markets</label><input id="sm" placeholder="Marlborough, Southborough"><div class="h">We'll build your data for these towns.</div></div><button class="btn btn-primary" style="width:100%;padding:13px;font-size:15px" onclick="doSignup()">Start 90-day free trial</button></div>
+<div class="af" id="f-signup"><div class="afl"><label>First name</label><input id="sf" placeholder="Jess"></div><div class="afl"><label>Email</label><input type="email" id="se" placeholder="you@example.com"></div><div class="afl"><label>Password</label><input type="password" id="sp" placeholder="Create password"><div class="h">At least 6 characters</div></div><div class="afl"><label>Target markets</label><div id="market-tags" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px"></div><input id="sm" placeholder="Start typing a city..." autocomplete="off" oninput="marketSearch(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();addMarketTag(this.value)}"><div id="market-suggestions" style="display:none;position:absolute;left:28px;right:28px;background:#fff;border:1px solid var(--bg3);border-radius:var(--radius);max-height:160px;overflow-y:auto;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,0.08)"></div><div class="h">Type a city or town name. Add multiple markets.</div></div><button class="btn btn-primary" style="width:100%;padding:13px;font-size:15px" onclick="doSignup()">Start 90-day free trial</button></div>
 <div class="atn">Create a free account to try the full product. Your data persists across sessions.</div></div>
 <button style="margin-top:16px;background:none;border:none;color:var(--ink3);font-size:13px;cursor:pointer;font-family:var(--sans)" onclick="showScreen('landing')">← Back to homepage</button></div></div>
 
@@ -144,167 +144,903 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-
 <div class="app-c"><div class="vp active" id="view-today"></div><div class="vp" id="view-pipeline"></div><div class="vp" id="view-content"></div><div class="vp" id="view-market"></div><div class="vp" id="view-coaching"></div></div>
 <div class="tbar"><button class="tb active" data-view="today" onclick="navTo('today')"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>Today</button><button class="tb" data-view="pipeline" onclick="navTo('pipeline')"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Pipeline</button><button class="tb" data-view="content" onclick="navTo('content')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Content</button><button class="tb" data-view="market" onclick="navTo('market')"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Market</button><button class="tb" data-view="coaching" onclick="navTo('coaching')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Coaching</button></div></div>
 
-<script src="https://cdn.jsdelivr.net/gh/anthropics/groundwork-app@main/app.js"></script>
 <script>
+// ============================================================
+// GROUNDWORK — COMPLETE CLIENT APPLICATION
+// ============================================================
+
 // ===== API LAYER =====
-const api={
-  token:localStorage.getItem('gw_token'),
-  async call(method,path,body){
-    const opts={method,headers:{'Content-Type':'application/json'}};
-    if(this.token)opts.headers['Authorization']='Bearer '+this.token;
-    if(body)opts.body=JSON.stringify(body);
-    const r=await fetch('/api'+path,opts);
-    const data=await r.json();
-    if(!r.ok)throw new Error(data.error||'Request failed');
+const api = {
+  token: localStorage.getItem('gw_token'),
+  async call(method, path, body) {
+    const opts = { method, headers: { 'Content-Type': 'application/json' } };
+    if (this.token) opts.headers['Authorization'] = 'Bearer ' + this.token;
+    if (body) opts.body = JSON.stringify(body);
+    const r = await fetch('/api' + path, opts);
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Request failed');
     return data;
   },
-  get(p){return this.call('GET',p)},
-  post(p,b){return this.call('POST',p,b)},
-  patch(p,b){return this.call('PATCH',p,b)},
-  del(p){return this.call('DELETE',p)}
+  get(p) { return this.call('GET', p) },
+  post(p, b) { return this.call('POST', p, b) },
+  patch(p, b) { return this.call('PATCH', p, b) },
+  del(p) { return this.call('DELETE', p) }
 };
 
-// ===== SCREEN =====
-function showScreen(n){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+n).classList.add('active');window.scrollTo(0,0);if(n==='app')loadAndRender()}
-async function loadAndRender(){
-  try{
-    const user=await api.get('/me');
-    S.agent=user;
-    S.contacts=await api.get('/contacts');
-    S.content={pieces:await api.get('/content')};
-    const stats=await api.get('/pipeline');
-    S.pipeline=stats;
-    const completed=await api.get('/tasks/completed?week='+S.agent.weekNumber+'&day='+S.agent.dayInWeek);
-    S.completedTasks=completed||[];
-    document.getElementById('trb').textContent=(S.agent.trialDaysLeft||87)+' days left';
+// ===== APP STATE (hydrated from API) =====
+const S = {
+  agent: { firstName: '', weekNumber: 1, dayInWeek: 1 },
+  pipeline: { hot: 0, warm: 0, nurture: 0, total: 0, contentPublished: 0, tasksCompleted: 0 },
+  contacts: [],
+  content: { pieces: [] },
+  completedTasks: [],
+  tasks: { items: [] },
+  // Static data
+  mkt: {
+    'Marlborough, MA': { mp:587000, pc:4.2, dom:12, dc:-3, al:34, stl:102.1, mi:1.3, sum:"Seller's market. Fast sales, above asking.", rs:[{a:'14 Phelps St',p:565000,d:8},{a:'22 Witherbee Dr',p:612000,d:11},{a:'8 Robin Hill Rd',p:498000,d:6}] },
+    'Southborough, MA': { mp:725000, pc:3.8, dom:15, dc:-2, al:18, stl:101.4, mi:1.7, sum:'Competitive. Strong near top schools.', rs:[{a:'45 Parkerville Rd',p:780000,d:12},{a:'11 Flagg Rd',p:695000,d:9},{a:'7 Woodland Rd',p:740000,d:18}] }
+  },
+  obj: [
+    { q:'"Wait for rates to drop."', a:'Every dip brings more buyers and pushes prices up. Buy now with less competition — you can always refinance later.' },
+    { q:'"Why a new agent?"', a:'You get my full attention. I\'m not juggling 30 clients. Same MLS tools, same data, plus I\'m hungry to make this work for you.' },
+    { q:'"My neighbor got more."', a:'Let me pull up that sale — lot size, condition, or timing usually explain the difference. I\'ll do a free comp analysis based on actual comparables.' },
+    { q:'"Zillow says my house is worth $X."', a:'Zillow misses your specific updates and this month\'s actual sales on your street. A proper comp analysis tells a different story — and it\'s free.' },
+    { q:'"I don\'t want an exclusive agreement."', a:'The agreement lets me invest real time and resources into your search. It protects both of us and ensures you get my best work.' }
+  ],
+  drafts: {
+    sphere_initial: "Hey {name}! I just got my real estate license — working the [your area]. If you ever hear of anyone thinking about buying or selling, I'd love the intro. No pressure at all!",
+    sphere_followup: "Hey {name}, tried to call you earlier — nothing urgent! Just catching up. Hope you're doing well!",
+    market_response: "Great question! [Your area] is really tight right now — homes selling fast, most above asking. If your friend is thinking about buying, sooner beats later. Want me to send some listings?",
+    warm_intro: "Hey {name}, you mentioned {referral} might be thinking about {action}. Would you be comfortable making an intro? No pressure at all.",
+    open_house_followup: "Hi {name} — great meeting you at {address}! Based on what you mentioned, you might also want to look at {suggestion}. Want me to send details?",
+    social_dm: "Hey {name}! Know anyone in [your area] thinking about buying or selling? Just building my network and would love to help.",
+    check_in: "Hey {name}! How's the house search going? I saw some new listings in {area} that might work for you. Want me to send them over?",
+    newsletter: "Hey {name}! I started sending biweekly market updates for [your area] — real data on what's selling, for how much, how fast. Want me to add you?"
+  }
+};
+
+// ===== SCREEN MANAGEMENT =====
+function showScreen(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + n).classList.add('active');
+  window.scrollTo(0, 0);
+  if (n === 'app') loadApp();
+}
+
+async function loadApp() {
+  try {
+    S.agent = await api.get('/me');
+    S.contacts = await api.get('/contacts');
+    S.content.pieces = await api.get('/content');
+    S.pipeline = await api.get('/pipeline');
+    const ct = await api.get('/tasks/completed?week=' + (S.agent.weekNumber||1) + '&day=' + (S.agent.dayInWeek||1));
+    S.completedTasks = ct || [];
+    document.getElementById('trb').textContent = (S.agent.trialDaysLeft || 90) + ' days left';
     rndr();
-  }catch(e){console.error('Load error:',e);doLogout()}
+  } catch(e) { console.error('Load failed:', e); doLogout(); }
 }
 
 // ===== AUTH =====
-function switchTab(t){document.querySelectorAll('.at button').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.af').forEach(f=>f.classList.remove('active'));if(t==='login'){document.querySelector('.at button:first-child').classList.add('active');document.getElementById('f-login').classList.add('active')}else{document.querySelector('.at button:last-child').classList.add('active');document.getElementById('f-signup').classList.add('active')}document.getElementById('ae').style.display='none'}
-async function doLogin(){const e=document.getElementById('le').value.trim(),p=document.getElementById('lp').value,err=document.getElementById('ae');if(!e||!p){err.textContent='Enter email and password.';err.style.display='block';return}try{const data=await api.post('/login',{email:e,password:p});api.token=data.token;localStorage.setItem('gw_token',data.token);S.agent=data.user;showScreen('app')}catch(ex){err.textContent=ex.message;err.style.display='block'}}
-async function doSignup(){const f=document.getElementById('sf').value.trim(),e=document.getElementById('se').value.trim(),p=document.getElementById('sp').value,m=document.getElementById('sm').value.trim(),err=document.getElementById('ae');if(!f||!e||!p){err.textContent='Fill in all fields.';err.style.display='block';return}if(p.length<6){err.textContent='Password: 6+ characters.';err.style.display='block';return}try{const markets=m?m.split(',').map(x=>x.trim()).filter(Boolean):[];const data=await api.post('/register',{email:e,password:p,firstName:f,markets});api.token=data.token;localStorage.setItem('gw_token',data.token);S.agent=data.user;showScreen('app')}catch(ex){err.textContent=ex.message;err.style.display='block'}}
-function doLogout(){api.token=null;localStorage.removeItem('gw_token');showScreen('landing')}
-document.getElementById('lp').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});document.getElementById('le').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
-if(localStorage.getItem('gw_token')){api.token=localStorage.getItem('gw_token');showScreen('app')}
+function switchTab(t) {
+  document.querySelectorAll('.at button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.af').forEach(f => f.classList.remove('active'));
+  if (t === 'login') {
+    document.querySelector('.at button:first-child').classList.add('active');
+    document.getElementById('f-login').classList.add('active');
+  } else {
+    document.querySelector('.at button:last-child').classList.add('active');
+    document.getElementById('f-signup').classList.add('active');
+  }
+  document.getElementById('ae').style.display = 'none';
+}
 
-// ===== DATA =====
-const S={
-  agent:{firstName:'Jess',weekNumber:1,dayInWeek:1,email:'jess@groundwork.ai'},
-  pipeline:{totalContacts:172,hotLeads:0,warmLeads:0,nurturing:172,contentPublished:0,showingsBooked:0},
-  contacts:[
-    {id:1,first:'Rachel',last:'Medeiros',i:'RM',phone:'(508) 555-0211',rel:'Aunt',status:'nurture',notes:'Bought 2017. Large social circle.',tags:['family','connector']},
-    {id:2,first:'Tom',last:'Callahan',i:'TC',phone:'(617) 555-0334',rel:'College friend',status:'nurture',notes:'Finance, Framingham. Knows movers.',tags:['friend','finance']},
-    {id:3,first:'Ava',last:'Patel',i:'AP',phone:'(508) 555-0887',rel:'Former coworker',status:'nurture',notes:'Rents Marlborough. Wants to buy.',tags:['renter','buyer-intent']},
-    {id:4,first:'Jake',last:'DeSilva',i:'JD',phone:'(774) 555-0156',rel:'HS friend',status:'nurture',notes:'Married last year. Life change trigger.',tags:['friend','newlywed']},
-    {id:5,first:'Nicole',last:'Kim',i:'NK',phone:'(857) 555-0423',rel:'College roommate',status:'nurture',notes:'Boston, wants space. Suburb buyer.',tags:['friend','renter']},
-    {id:6,first:'Maria',last:'Santos',i:'MS',phone:'(508) 555-0678',rel:"Mom's friend",status:'nurture',notes:'20 yrs Marlborough. Knows everyone.',tags:['connector']},
-    {id:7,first:'Chris',last:'Brennan',i:'CB',phone:'(508) 555-0901',rel:'Former manager',status:'nurture',notes:'Recently promoted. Might upgrade.',tags:['professional']},
-    {id:8,first:'Priya',last:'Sharma',i:'PS',phone:'(617) 555-0544',rel:'Grad school friend',status:'nurture',notes:'Biotech. Engaged. Wants suburbs.',tags:['engaged','buyer-intent']},
-    {id:9,first:'Danny',last:'Oliveira',i:'DO',phone:'(508) 555-0312',rel:'Cousin',status:'nurture',notes:'Condo Worcester. Might upgrade.',tags:['family','homeowner']},
-    {id:10,first:'Sarah',last:'Lynch',i:'SL',phone:'(774) 555-0876',rel:'Gym friend',status:'nurture',notes:'Rents Southborough. Healthcare.',tags:['renter']},
-    {id:11,first:'Mike',last:'Tavares',i:'MT',phone:'(508) 555-0445',rel:"Dad's friend's son",status:'nurture',notes:'Renting Worcester. House hunting.',tags:['renter','buyer-intent']},
-    {id:12,first:'Leah',last:'Chen',i:'LC',phone:'(617) 555-0772',rel:'College friend',status:'nurture',notes:'Marketing. Somerville. Engaged.',tags:['friend','engaged']},
-    {id:13,first:'Brian',last:'Kowalski',i:'BK',phone:'(508) 555-0223',rel:'Neighbor',status:'nurture',notes:'Starter home Hudson. 2 kids.',tags:['growing-family']},
-    {id:14,first:'Jen',last:"O'Brien",i:'JO',phone:'(508) 555-0991',rel:'KW colleague',status:'nurture',notes:'Experienced agent. Mentor potential.',tags:['agent']},
-    {id:15,first:'Derek',last:'Fontes',i:'DF',phone:'(774) 555-0118',rel:'HS friend',status:'nurture',notes:'Electrician. Knows contractors.',tags:['trade']}
-  ],
-  tasks:{items:[]},
-  content:{pieces:[
-    {id:1,title:'Marlborough market report — Apr 2026',st:'ready',ch:['instagram','facebook','blog'],tw:'Marlborough',pv:'Median $587K (+4.2%). 12 DOM. 1.3 mo inventory. 102.1% sale-to-list.'},
-    {id:2,title:'Southborough neighborhood guide',st:'generating',ch:['blog','email'],tw:'Southborough',pv:'Neary/Woodward/Trottier districts. 45-55 min commute. Median $725K.'},
-    {id:3,title:'Rate watch: Fed hold impact',st:'scheduled',ch:['instagram','linkedin'],tw:null,pv:'Fed at 4.25-4.50%. Mortgages 6.1%. No relief for waiting buyers.'},
-    {id:4,title:'3 streets to watch in Marlborough',st:'draft',ch:['instagram','facebook'],tw:'Marlborough',pv:'Phelps St, Witherbee Dr, Robin Hill Rd.'},
-    {id:5,title:'Southborough market report',st:'generating',ch:['instagram','blog'],tw:'Southborough',pv:'Median $725K (+3.8%). 15 DOM. Neary strongest.'},
-    {id:6,title:'First-time buyer mistakes',st:'draft',ch:['instagram','facebook'],tw:null,pv:'5 mistakes: waiting for rates, skipping pre-approval, trusting Zillow.'},
-    {id:7,title:'April newsletter',st:'scheduled',ch:['email'],tw:null,pv:'Stats, listings, spotlight, personal note.'}
-  ]},
-  mkt:{'Marlborough, MA':{mp:587000,pc:4.2,dom:12,dc:-3,al:34,stl:102.1,mi:1.3,sum:"Seller's market. Fast, above asking.",rs:[{a:'14 Phelps St',p:565000,d:8},{a:'22 Witherbee Dr',p:612000,d:11},{a:'8 Robin Hill Rd',p:498000,d:6}]},'Southborough, MA':{mp:725000,pc:3.8,dom:15,dc:-2,al:18,stl:101.4,mi:1.7,sum:'Competitive. Strong near schools.',rs:[{a:'45 Parkerville Rd',p:780000,d:12},{a:'11 Flagg Rd',p:695000,d:9},{a:'7 Woodland Rd',p:740000,d:18}]}},
-  obj:[{q:'"Wait for rates to drop."',a:'Every dip brings more buyers. Buy now with less competition. Refinance later.'},{q:'"Why a new agent?"',a:'Full attention. Real-time data. Same MLS tools. Hungry to make it work.'},{q:'"Neighbor got more."',a:'Let me pull that sale. Lot, condition, timing explain it. Free comp analysis.'},{q:'"Zillow says $X."',a:'Zillow misses your updates and this month\'s actual sales. Free comp analysis.'},{q:'"No exclusive agreement."',a:'Lets me invest real time into your search. Protects both of us.'}],
-  drafts:{sphere_initial:"Hey {name}! Just got my license — working Marlborough/Southborough. If you hear of anyone buying or selling, I'd love the intro!",sphere_followup:"Hey {name}, tried to call — nothing urgent! Catching up.",market_response:"Great question! Marlborough is tight — 12 days, above asking. Sooner beats later. Want listings?",warm_intro:"Hey {name}, you mentioned {referral} might be {action}. Comfortable making an intro?",oh_followup:"Hi {name} — great meeting you at {address}! You might like {suggestion}. Details?",social_dm:"Hey {name}! Know anyone in Marlborough/Southborough buying or selling?",check_in:"Hey {name}! How's the search? New listings in {area} — want them?",newsletter:"Hey {name}! I send biweekly market updates. Real data. Want in?"},
-  async setWeek(w){this.agent.weekNumber=w;this.agent.dayInWeek=1;try{await api.patch('/me',{weekNumber:w,dayInWeek:1});const c=await api.get('/tasks/completed?week='+w+'&day=1');this.completedTasks=c||[]}catch(e){}document.getElementById('trb').textContent=(this.agent.trialDaysLeft||87)+' days left'},
-  async setDay(d){this.agent.dayInWeek=d;try{await api.patch('/me',{dayInWeek:d});const c=await api.get('/tasks/completed?week='+this.agent.weekNumber+'&day='+d);this.completedTasks=c||[]}catch(e){}},
-  async moveContact(id,s){try{await api.patch('/contacts/'+id,{status:s});this.contacts=await api.get('/contacts')}catch(e){};this.recalc()},
-  async publishContent(id){try{await api.patch('/content/'+id,{status:'published'});this.content.pieces=await api.get('/content')}catch(e){}},
-  async addContact(c){try{await api.post('/contacts',c);this.contacts=await api.get('/contacts')}catch(e){}},
-  recalc(){this.pipeline.hot=this.contacts.filter(c=>c.status==='hot').length;this.pipeline.warm=this.contacts.filter(c=>c.status==='warm').length;this.pipeline.nurture=this.contacts.filter(c=>c.status==='nurture').length}
-};
-</script>
-<script>
+async function doLogin() {
+  const e = document.getElementById('le').value.trim();
+  const p = document.getElementById('lp').value;
+  const err = document.getElementById('ae');
+  if (!e || !p) { err.textContent = 'Please enter your email and password.'; err.style.display = 'block'; return; }
+  try {
+    const data = await api.post('/login', { email: e, password: p });
+    api.token = data.token;
+    localStorage.setItem('gw_token', data.token);
+    showScreen('app');
+  } catch(ex) { err.textContent = ex.message; err.style.display = 'block'; }
+}
+
+async function doSignup() {
+  const f = document.getElementById('sf').value.trim();
+  const e = document.getElementById('se').value.trim();
+  const p = document.getElementById('sp').value;
+  const m = document.getElementById('sm').value.trim();
+  const err = document.getElementById('ae');
+  if (!f || !e || !p) { err.textContent = 'Please fill in all fields.'; err.style.display = 'block'; return; }
+  if (p.length < 6) { err.textContent = 'Password must be at least 6 characters.'; err.style.display = 'block'; return; }
+  try {
+    const markets = m ? m.split(',').map(x => x.trim()).filter(Boolean) : [];
+    const data = await api.post('/register', { email: e, password: p, firstName: f, markets });
+    api.token = data.token;
+    localStorage.setItem('gw_token', data.token);
+    showScreen('app');
+  } catch(ex) { err.textContent = ex.message; err.style.display = 'block'; }
+}
+
+function doLogout() {
+  api.token = null;
+  localStorage.removeItem('gw_token');
+  showScreen('landing');
+}
+
+// Enter key support
+document.getElementById('lp').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin() });
+document.getElementById('le').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin() });
+
+// Auto-login if token exists
+if (localStorage.getItem('gw_token')) { api.token = localStorage.getItem('gw_token'); showScreen('app'); }
+
 // ===== TASK ENGINE =====
-const TE={
-  gen(s){const d=s.agent.dayInWeek,w=s.agent.weekNumber,t=[];let id=1;
-  const T=(a,b,c,e,o)=>{t.push({id:id++,title:a,detail:b,pri:c,cat:e,done:false,time:o&&o.t,draft:o&&o.d,cid:o&&o.c,xid:o&&o.x})};
-  if(w===1){if(d===1){T('Import phone contacts','Pull in everyone. Goal: 150+.','high','setup',{t:'10 min'});T('Set up profile photo and bio','Goes on your website and messages.','high','setup',{t:'5 min'});T('Review your website','Built overnight with your market data.','high','setup',{t:'5 min'});T('Text your 10 closest people','Personal, individual texts.','high','outreach',{t:'20 min',d:'sphere_initial'});T('Read Marlborough snapshot','Median, DOM, inventory — know them cold.','medium','learning',{t:'5 min'})}
-  else if(d===2){T('Call Rachel Medeiros','Aunt. Large social circle. Ask the question.','high','outreach',{t:'10 min',c:1});T('Call Tom Callahan','College friend. Finance. Knows movers.','high','outreach',{t:'10 min',c:2});T('Call Ava Patel','Coworker. Rents, wants to buy. Could be a lead.','high','outreach',{t:'10 min',c:3});T('Call Jake DeSilva','Married last year. Life change trigger.','medium','outreach',{t:'10 min',c:4});T('Call Nicole Kim','Boston, wants space. Suburb buyer.','medium','outreach',{t:'10 min',c:5})}
-  else if(d===3){T('Approve market report','$587K, 12 DOM, 1.3 mo. One tap.','high','content',{t:'3 min',x:1});T('Review Southborough guide','Schools, commute, taxes. SEO blog post.','medium','content',{t:'10 min',x:2});T('Call Maria Santos',"Mom's friend. Knows everyone.",'high','outreach',{t:'10 min',c:6});T('Call Priya Sharma','Engaged. Biotech. Wants suburbs. Real buyer.','high','outreach',{t:'10 min',c:8});T("Text yesterday's voicemails",'Short follow-up doubles contact rate.','medium','follow-up',{t:'5 min',d:'sphere_followup'})}
-  else if(d===4){T('Follow up warm responses','Anyone mention a name? Get the intro.','high','follow-up',{t:'15 min',d:'warm_intro'});T('Respond to sphere texts','Market questions = answer with data.','high','follow-up',{t:'10 min',d:'market_response'});T('DM 5 people on social','Comment first, then DM. Conversation.','medium','outreach',{t:'15 min',d:'social_dm'});T('Ask broker about open houses','Get first in line.','medium','pipeline',{t:'5 min'})}
-  else if(d===5){T('Reply to every unanswered text','Close every loop.','high','follow-up',{t:'15 min'});T('Log new contacts','Add anyone from this week.','high','setup',{t:'10 min'});T('Approve 2nd social post','One tap.','medium','content',{t:'2 min',x:3});T('Review week 1 pipeline','How many calls? Anyone warm?','medium','learning',{t:'5 min'})}
-  else if(d===6){T('Text 3 friends casually','Not about real estate. Stay human.','low','outreach',{t:'5 min'});T('Drive target neighborhoods','Note signs, construction. 30 min.','medium','learning',{t:'30 min'})}
-  else if(d===7){T('Review week 1','Conversations, warm leads, content.','medium','learning',{t:'5 min'});T('Preview week 2','More calls, deeper follow-ups.','low','planning',{t:'5 min'})}}
-  else if(w===2){if(d===1){T('Call back interested contacts','Ava and Priya showed interest.','high','follow-up',{t:'20 min'});T('Call 5 new sphere contacts','Danny, Sarah, Mike, Leah, Brian.','high','outreach',{t:'30 min'});T('Follow up on open house slots','Persistence = floor time.','medium','pipeline',{t:'5 min'})}else if(d===2){T('Deep follow-up: Ava','Timeline, budget, pre-approval.','high','follow-up',{t:'15 min',c:3});T('Deep follow-up: Priya','Southborough? Budget? Pre-approved?','high','follow-up',{t:'15 min',c:8});T('Send 3 matching listings','Text with personal note.','high','pipeline',{t:'20 min'})}else if(d===3){T('Call 5 more sphere','Every call = lottery ticket.','high','outreach',{t:'30 min'});T("Post '3 streets to watch'",'Approve social post.','medium','content',{t:'3 min',x:4})}else if(d===4){T('Open house prep','Comps, objections, talking points.','high','pipeline',{t:'15 min'});T('Follow up on listings sent','Schedule showings?','high','follow-up',{t:'10 min'})}else if(d===5){T('Friday sweep','Close every thread.','high','follow-up',{t:'20 min'});T('Review week 2','2-4 warm leads?','medium','learning',{t:'5 min'})}else if(d===6){T('Open house or event','Get in front of new people.','high','pipeline',{t:'3 hrs'})}else if(d===7){T('Log all contacts','Enter with notes.','high','setup',{t:'15 min'});T('Set week 3 goals','25 calls, 2 content, 1 OH.','low','planning',{t:'3 min'})}}
-  else if(w===3){if(d===1){T('Hot lead: Priya','Engaged, $650K, Southborough. Schedule showings.','high','follow-up',{t:'15 min',c:8});T('New referral: Mike Tavares','From Rachel. $550K, Marlborough.','high','pipeline',{t:'15 min',c:11});T('Call 5 sphere','Keep filling funnel.','high','outreach',{t:'30 min'})}else if(d===2){T('Schedule Priya showings','3-4 near Neary, under $650K.','high','pipeline',{t:'30 min'});T('Send Mike market data','Warm him up.','high','follow-up',{t:'10 min',c:11});T('Approve newsletter','Stats + note to sphere.','medium','content',{t:'10 min',x:7})}else if(d===3){T('Prep showing tour','Comps, pros/cons, talking points.','high','pipeline',{t:'30 min'});T('Nurture Ava','Send matching listing.','medium','follow-up',{t:'10 min',c:3})}else if(d===4){T('Call Mike — talk listings','Walk through 2-3 options.','high','pipeline',{t:'20 min',c:11});T('Confirm Saturday showings','Send Priya the itinerary.','high','pipeline',{t:'10 min',c:8})}else if(d===5){T('Print showing materials','Sheets, comps, cards.','high','pipeline',{t:'15 min'});T('Friday sweep','Close all threads.','high','follow-up',{t:'15 min'})}else if(d===6){T('Show homes to Priya','Southborough tour.','high','pipeline',{t:'3 hrs',c:8});T('Show homes to Mike','Marlborough tour.','high','pipeline',{t:'2 hrs',c:11})}else if(d===7){T('Debrief showings','Log notes.','high','follow-up',{t:'20 min'});T('Send follow-ups','Top picks with reasoning.','high','follow-up',{t:'15 min'})}}
-  else if(w===4){if(d===1){T('Priya update','Ready to offer? Objections?','high','follow-up',{t:'15 min',c:8});T('Mike update','Narrowing down?','high','follow-up',{t:'15 min',c:11});T("Ava is hot — pre-approved",'$475K, Marlborough. Schedule showings.','high','pipeline',{t:'15 min',c:3})}else if(d===2){T('Schedule Ava showings','3 starter homes.','high','pipeline',{t:'30 min',c:3});T("Priya's top pick",'Start offer conversation.','high','follow-up',{t:'20 min',c:8})}else if(d===3){T('Offer strategy','Price, escalation, inspection.','high','pipeline',{t:'30 min',c:8});T('Show homes to Ava','First-time buyer tour.','high','pipeline',{t:'3 hrs',c:3})}else if(d===4){T('Offer happening?','Prep docs with broker.','high','pipeline',{t:'20 min'});T('Debrief Ava','Next step?','high','follow-up',{t:'15 min',c:3})}else if(d===5){T('Biggest Friday sweep','3 hot leads, active content.','high','follow-up',{t:'30 min'});T('Month 1 results','Zero → 3 hot leads.','medium','learning',{t:'10 min'})}else if(d===6){T('Shows or negotiations','Active deal management.','high','pipeline',{t:'4 hrs'})}else if(d===7){T('Month 1 complete','More in 4 weeks than most in 4 months.','medium','learning',{t:'5 min'});T('Set month 2 goals','Close deal, 300+ contacts, 2 OH/wk.','medium','planning',{t:'10 min'})}}
-  s.tasks.items=t;return t},
-  tip(d,w){const t={1:{1:'Build your contact list today. No selling.',2:'Follow up first. Warm contacts = priority.',3:'Hot lead + new referral. Real pipeline.',4:'3 hot leads. Don\'t ease up.'},2:{1:'5 calls today. Check Coaching for the script.',2:'Go deeper: Ava and Priya. Timeline, budget.',3:'Hot leads need attention. Priya ready. Mike is new.',4:'Offer conversations. Pull comps, discuss strategy.'},3:{1:'Market report ready. Approve it + 3 calls.',2:'Keep outreach going while nurturing.',3:'Prep = everything. Show up prepared.',4:'Active leads + pipeline. Balance both.'},4:{1:'Anyone mention a name? Get that intro.',2:'Open house prep or door knock.',3:'Confirm showings. Take care of leads.',4:'Offer live? Stay focused. If not, keep building.'},5:{1:'Friday = close every loop.',2:'Week 2 done. More warm leads, content indexed.',3:'Ahead of schedule. Hot + warm + showings.',4:'Month 1 done. Zero to 3 hot leads.'},6:{1:'Light day. Casual outreach.',2:'Face to face with potential leads.',3:'Showing day. Commission work.',4:'Busiest weekend. Showings, offers.'},7:{1:'Hardest week done. Most never get here.',2:'Pipeline exists. Foundation is real.',3:'Homes shown. Leads managed. Ranking.',4:'Month 1 complete. Ahead of the curve.'}};return(t[d]&&t[d][w])||''},
-  theme(d){return{1:'Build foundation',2:'Start conversations',3:'Establish presence',4:'Deepen & expand',5:'Close every loop',6:'Weekend hustle',7:'Review & reset'}[d]||''},
-  catLabel(c){return{setup:'Setup',outreach:'Revenue activity',content:'Content','follow-up':'Follow-up',learning:'Learning',pipeline:'Pipeline',planning:'Planning'}[c]||c},
-  catColor(c){return{setup:{b:'var(--c-blue-bg)',t:'var(--c-blue-text)'},outreach:{b:'var(--c-coral-bg)',t:'var(--c-coral-text)'},content:{b:'var(--c-green-bg)',t:'var(--c-green-text)'},'follow-up':{b:'var(--c-amber-bg)',t:'var(--c-amber-text)'},learning:{b:'var(--c-purple-bg)',t:'var(--c-purple-text)'},pipeline:{b:'var(--c-teal-bg)',t:'var(--c-teal-text)'},planning:{b:'var(--c-purple-bg)',t:'var(--c-purple-text)'}}[c]||{b:'var(--c-blue-bg)',t:'var(--c-blue-text)'}}
-};
-</script>
-<script>
-// ===== VIEWS =====
-let cv='today';
-function navTo(v){cv=v;document.querySelectorAll('.tb').forEach(b=>b.classList.toggle('active',b.dataset.view===v));document.querySelectorAll('.vp').forEach(p=>p.classList.toggle('active',p.id==='view-'+v));rndr()}
-function rndr(){const fn={today:rToday,pipeline:rPipe,content:rCont,market:rMkt,coaching:rCoach}[cv];if(fn)fn()}
-function rToday(){const el=document.getElementById('view-today');if(!el)return;const d=S.agent.dayInWeek||1,w=S.agent.weekNumber||1,dn=['','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],dd=['','Apr 7','Apr 8','Apr 9','Apr 10','Apr 11','Apr 12','Apr 13'],wo={1:'Apr 7-13',2:'Apr 14-20',3:'Apr 21-27',4:'Apr 28-May 4'},tasks=TE.gen(S),tip=TE.tip(d,w),theme=TE.theme(d);
-// Hydrate done state from API
-tasks.forEach(t=>{const key='w'+w+'d'+d+'t'+t.id;if(S.completedTasks&&S.completedTasks.includes(key))t.done=true});
-const comp=tasks.filter(t=>t.done).length,total=tasks.length,pct=total?Math.round(comp/total*100):0,groups={};tasks.forEach(t=>{if(!groups[t.cat])groups[t.cat]=[];groups[t.cat].push(t)});let h='';
-h+=`<div class="th"><div class="tg">${d<=5?'Good morning':'Hey'}, ${S.agent.firstName}</div><div class="txc">${dn[d]||''}, ${dd[d]||''} · Week ${w}, Day ${d} — ${theme}</div></div>`;
-h+='<div class="ws"><span class="wsl">Week</span>';for(let i=1;i<=4;i++)h+=`<button class="wp ${i===w?'active':''}" onclick="(async()=>{await S.setWeek(${i});rToday()})()">${i}</button>`;h+=`<span class="wsd">${wo[w]||''}</span></div>`;
-h+='<div class="wn">';const sd=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];for(let i=1;i<=7;i++)h+=`<button class="dp ${i===d?'active':i<d?'completed':''}" onclick="(async()=>{await S.setDay(${i});rToday()})()"><span class="dpl">${sd[i-1]}</span>${i}</button>`;h+='</div>';
-h+=`<div class="prb"><div class="prm"><span>${comp}/${total} tasks</span><span>${pct}%</span></div><div class="prt"><div class="prf" style="width:${pct}%"></div></div></div>`;
-if(tip)h+=`<div class="ct">${tip}</div>`;
-for(const[cat,ct]of Object.entries(groups)){const cc=TE.catColor(cat);h+=`<div class="tgr"><div class="tgh"><span class="tgt">${TE.catLabel(cat)}</span><span class="tgb" style="background:${cc.b};color:${cc.t}">${ct.length}</span></div>`;ct.forEach(t=>{const dr=t.draft?S.drafts[t.draft]:null,co=t.cid?S.contacts.find(c=>c.id===t.cid):null;h+=`<div class="tc ${t.done?'done':''}"><div class="tr"><button class="tck ${t.done?'checked':''}" onclick="tgl(${t.id})"></button><div class="tbd"><div class="tct">${t.title}</div><div class="tcd">${t.detail}</div>${co?`<div class="tcp"><span class="ca" style="background:var(--c-blue-bg);color:var(--c-blue-text)">${co.initials}</span><span class="cn">${co.firstName} ${co.lastName}</span><span class="cm">${co.relationship}</span></div>`:''}</div>${t.time?`<span class="tti">${t.time}</span>`:''}</div>${dr?`<div class="db"><div class="dh"><span>Draft message</span><button class="dcb" onclick="cpd(this)">Copy</button></div><div class="dtx">${dr}</div></div>`:''}</div>`});h+='</div>'}
-if(d===7){const tot=S.pipeline.total||S.contacts.length,leads=(S.pipeline.hot||0)+(S.pipeline.warm||0),pub=S.pipeline.contentPublished||0,tc=S.pipeline.tasksCompleted||0;h+=`<div class="wsu"><div class="wsut">Week ${w} results</div><div class="sgr"><div class="sst"><div class="ssn">${tot}</div><div class="ssl">Contacts</div></div><div class="sst"><div class="ssn">${tc}</div><div class="ssl">Tasks done</div></div><div class="sst"><div class="ssn">${leads}</div><div class="ssl">Active leads</div></div><div class="sst"><div class="ssn">${pub}</div><div class="ssl">Content live</div></div></div></div>`}
-el.innerHTML=h}
-function rPipe(){const el=document.getElementById('view-pipeline');if(!el)return;S.recalc();const hot=S.contacts.filter(c=>c.status==='hot'),warm=S.contacts.filter(c=>c.status==='warm'),nur=S.contacts.filter(c=>c.status==='nurture'),tot=S.contacts.length;const sC={hot:'var(--c-coral-bg)',warm:'var(--c-amber-bg)',nurture:'var(--c-teal-bg)'},sT={hot:'var(--c-coral-text)',warm:'var(--c-amber-text)',nurture:'var(--c-teal-text)'};
-let h=`<div class="vh"><div class="vt">Pipeline</div><div class="vs">${S.pipeline.total||S.contacts.length} contacts · Week ${S.agent.weekNumber||1}</div></div>`;
-h+=`<div class="pps"><div class="pp2"><div class="ppn">${hot.length}</div><div class="ppl">Hot</div></div><div class="pp2"><div class="ppn">${warm.length}</div><div class="ppl">Warm</div></div><div class="pp2"><div class="ppn">${nur.length}</div><div class="ppl">Nurture</div></div><div class="pp2"><div class="ppn">${S.pipeline.contentPublished||0}</div><div class="ppl">Published</div></div></div>`;
-h+=`<div class="fun"><div class="fr"><div class="fl">Hot</div><div class="fbw"><div class="fb hot" style="width:${Math.max(4,hot.length/tot*500)}%"></div></div><div class="fco">${hot.length}</div></div><div class="fr"><div class="fl">Warm</div><div class="fbw"><div class="fb warm" style="width:${Math.max(4,warm.length/tot*500)}%"></div></div><div class="fco">${warm.length}</div></div><div class="fr"><div class="fl">Nurture</div><div class="fbw"><div class="fb nurture" style="width:100%"></div></div><div class="fco">${nur.length}</div></div></div>`;
-h+=`<div class="cs"><input id="csi" placeholder="Search contacts..." oninput="fltC(this.value)"></div>`;
-h+=`<div class="ft2"><button class="ft3 active" onclick="fltS('all',this)">All (${tot})</button><button class="ft3" onclick="fltS('hot',this)">Hot (${hot.length})</button><button class="ft3" onclick="fltS('warm',this)">Warm (${warm.length})</button><button class="ft3" onclick="fltS('nurture',this)">Nurture (${nur.length})</button></div>`;
-h+=`<div class="clh"><span>Contacts</span><button class="acb" onclick="sAC()">+ Add</button></div><div class="cl" id="cl2">`;
-S.contacts.forEach(c=>{h+=`<div class="cr" data-status="${c.status}" data-name="${c.firstName} ${c.lastName}" onclick="sCD(${c.id})"><div class="cav" style="background:${sC[c.status]};color:${sT[c.status]}">${c.initials}</div><div class="ci"><div class="cna">${c.firstName} ${c.lastName}</div><div class="cme">${c.relationship}</div></div><div class="csb" style="background:${sC[c.status]};color:${sT[c.status]}">${c.status}</div></div>`});
-h+=`</div><div class="acf" id="acf2" style="display:none"><div class="ft">Add contact</div><div class="fr2"><input id="nf2" placeholder="First name"><input id="nl2" placeholder="Last name"></div><input id="np2" placeholder="Phone"><input id="nr2" placeholder="Relationship"><textarea id="nn2" placeholder="Notes"></textarea><div class="fa"><button class="btn btn-outline" onclick="hAC()">Cancel</button><button class="btn btn-primary" onclick="svC()">Save</button></div></div>`;
-el.innerHTML=h}
-function rCont(){const el=document.getElementById('view-content');if(!el)return;const pub=S.content.pieces.filter(p=>p.status==='published').length,so={ready:0,generating:1,draft:2,scheduled:3,published:4},sorted=[...S.content.pieces].sort((a,b)=>(so[a.status]||5)-(so[b.status]||5));let h=`<div class="vh"><div class="vt">Content</div><div class="vs">${S.content.pieces.length} pieces · ${pub} published</div></div>`;
-sorted.forEach(p=>{const sc={ready:{l:'Ready',b:'var(--c-green-bg)',c:'var(--c-green-text)',a:1},generating:{l:'Generating',b:'var(--c-purple-bg)',c:'var(--c-purple-text)',a:0},draft:{l:'Draft',b:'var(--c-amber-bg)',c:'var(--c-amber-text)',a:2},scheduled:{l:'Scheduled',b:'var(--c-blue-bg)',c:'var(--c-blue-text)',a:0},published:{l:'Published',b:'var(--c-teal-bg)',c:'var(--c-teal-text)',a:0}}[p.status];if(!sc)return;h+=`<div class="cc"><div class="cto"><span class="cbg" style="background:${sc.b};color:${sc.c}">${sc.l}</span>${p.town?`<span class="ctw">${p.town}</span>`:''}</div><div class="ctt">${p.title}</div>${p.preview?`<div class="cpv">${p.preview}</div>`:''}<div class="cch">${(p.channels||[]).map(c=>`<span class="cht">${c}</span>`).join('')}</div>${sc.a===1?`<div class="cac"><button class="btn btn-primary" onclick="pubContent(${p.id})">Approve & publish</button></div>`:sc.a===2?`<div class="cac"><button class="btn btn-outline">Edit draft</button></div>`:''}</div>`});el.innerHTML=h}
-async function pubContent(id){await S.publishContent(id);rCont()}
-function rMkt(){const el=document.getElementById('view-market');if(!el)return;let h=`<div class="vh"><div class="vt">Market intel</div><div class="vs">Live data · pull up anytime</div></div>`;
-for(const[tw,d]of Object.entries(S.mkt)){h+=`<div class="mc"><div class="mch"><div class="mtn">${tw}</div><div class="msu">${d.sum}</div></div><div class="mg"><div class="ms"><div class="msv">$${(d.mp/1000).toFixed(0)}K</div><div class="msl">Median price</div><div class="msd up">+${d.pc}%</div></div><div class="ms"><div class="msv">${d.dom}</div><div class="msl">Days on market</div><div class="msd ${d.dc<0?'up':'dn'}">${d.dc}d</div></div><div class="ms"><div class="msv">${d.stl}%</div><div class="msl">Sale-to-list</div><div class="msd up">${d.stl>100?'Over asking':'At ask'}</div></div><div class="ms"><div class="msv">${d.mi}</div><div class="msl">Months supply</div><div class="msd up">${d.mi<3?"Seller's":'Balanced'}</div></div></div><div class="mtt"><div class="mtl">What to say</div><div class="mttx">"${tw.split(',')[0]} is tight — ${d.dom} days, ${d.stl>100?'above asking':'steady'}. ${d.mi<3?"Sellers: strong as it gets. Buyers: I'm tracking daily.":'Good time to negotiate.'}"</div></div>`;
-if(d.rs){h+='<div class="rsa"><div class="rst">Recent sales</div>';d.rs.forEach(s=>{h+=`<div class="rsr"><div class="rsa2">${s.a}</div><div class="rsp">$${(s.p/1000).toFixed(0)}K</div><div class="rsd">${s.d}d</div></div>`});h+='</div>'}h+='</div>'}el.innerHTML=h}
-function rCoach(){const el=document.getElementById('view-coaching');if(!el)return;
-const sc=[{t:'Sphere call script',x:'Friends, family, acquaintances',s:[{l:'Open casually',t:'"Hey! How\'s everything going?"'},{l:'Mention real estate',t:'"I started in real estate — Marlborough/Southborough."'},{l:'The question',t:'"Know anyone buying or selling?"'},{l:'If no',t:'Thank them. They\'ll remember.'},{l:'If yes',t:'"Comfortable making an intro?"'}]},{t:'Home value question',x:'Seller question — your chance to shine',s:[{l:'Pull up data',t:'Real numbers on your phone.'},{l:'Give a range',t:'"Homes like yours: $X-$Y."'},{l:'Next step',t:'"Free comp analysis — takes a day."'}]},{t:'Open house script',x:'Engaging walk-ins',s:[{l:'Welcome',t:'"Hi! Familiar with this neighborhood?"'},{l:'Qualify',t:'"Looking here? Timeline?"'},{l:'Capture',t:'"Best number to send listings?"'}]}];
-let h=`<div class="vh"><div class="vt">Coaching</div><div class="vs">Scripts, objections, templates</div></div>`;
-sc.forEach(s=>{h+=`<div class="scc"><div class="sch"><div class="sct">${s.t}</div><div class="scx">${s.x}</div></div>`;s.s.forEach((st,i)=>{h+=`<div class="scs"><div class="scn">${i+1}</div><div class="scb"><div class="scl">${st.l}</div><div class="scst">${st.t}</div></div></div>`});h+='</div>'});
-h+='<div class="obs"><div class="obt">Objection handling</div><div class="obsu">When clients push back</div>';S.obj.forEach(o=>{h+=`<div class="obc"><div class="obq">${o.q}</div><div class="oba">${o.a}</div></div>`});h+='</div>';
-h+='<div class="drs"><div class="drt">Message templates</div><div class="drsb">Tap to copy. Make it yours.</div>';const dl={sphere_initial:'First outreach',sphere_followup:'Voicemail text',market_response:'Market question',warm_intro:'Referral ask',oh_followup:'Open house follow-up',social_dm:'Social DM',check_in:'Warm check-in',newsletter:'Newsletter invite'};for(const[k,t]of Object.entries(S.drafts)){h+=`<div class="drc"><div class="drh"><span>${dl[k]||k}</span><button class="dcb" onclick="cpd(this)">Copy</button></div><div class="drtx">${t}</div></div>`}h+='</div>';el.innerHTML=h}
+const TE = {
+  gen(s) {
+    const d = s.agent.dayInWeek || 1, w = s.agent.weekNumber || 1, t = []; let id = 1;
+    const T = (title, detail, pri, cat, opts) => {
+      t.push({ id: id++, title, detail, pri, cat, done: false, time: opts?.t, draft: opts?.d, cid: opts?.c, xid: opts?.x });
+    };
 
-// ===== HELPERS =====
-async function tgl(id){const t=S.tasks.items.find(x=>x.id===id);if(t){t.done=!t.done;const key='w'+S.agent.weekNumber+'d'+S.agent.dayInWeek+'t'+id;if(t.done){S.completedTasks.push(key);try{await api.post('/tasks/complete',{week:S.agent.weekNumber,day:S.agent.dayInWeek,taskKey:key})}catch(e){}}else{S.completedTasks=S.completedTasks.filter(k=>k!==key);try{await api.post('/tasks/uncomplete',{week:S.agent.weekNumber,day:S.agent.dayInWeek,taskKey:key})}catch(e){}}rToday()}}
-function cpd(btn){const p=btn.closest('.db,.drc');const el=p?p.querySelector('.dtx,.drtx'):null;if(el){navigator.clipboard.writeText(el.textContent).catch(()=>{});btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',1500)}}
-function sAC(){document.getElementById('acf2').style.display='block'}
-function hAC(){document.getElementById('acf2').style.display='none'}
-async function svC(){const f=document.getElementById('nf2').value.trim(),l=document.getElementById('nl2').value.trim();if(!f){alert('Enter a first name.');return}await S.addContact({firstName:f,lastName:l,phone:document.getElementById('np2').value.trim(),relationship:document.getElementById('nr2').value.trim()||'Contact',status:'nurture',notes:document.getElementById('nn2').value.trim(),tags:['new']});document.getElementById('nf2').value='';document.getElementById('nl2').value='';document.getElementById('np2').value='';document.getElementById('nr2').value='';document.getElementById('nn2').value='';hAC();rPipe()}
-function fltC(q){q=q.toLowerCase();document.querySelectorAll('#cl2 .cr').forEach(r=>{r.style.display=r.dataset.name.toLowerCase().includes(q)?'flex':'none'})}
-function fltS(s,btn){document.querySelectorAll('.ft3').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('#cl2 .cr').forEach(r=>{r.style.display=(s==='all'||r.dataset.status===s)?'flex':'none'})}
-async function mvC(id,s,el){await S.moveContact(id,s);el.remove();rPipe()}
-function sCD(id){const c=S.contacts.find(x=>x.id===id);if(!c)return;const sc={hot:'var(--coral)',warm:'var(--amber)',nurture:'var(--teal)'};const ov=document.createElement('div');ov.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:200;display:flex;align-items:flex-end;justify-content:center';ov.onclick=e=>{if(e.target===ov)ov.remove()};const cd=document.createElement('div');cd.style.cssText='background:var(--bg);border-radius:14px 14px 0 0;padding:20px 20px 28px;width:100%;max-width:600px;max-height:75vh;overflow-y:auto';cd.innerHTML=`<div style="width:36px;height:4px;background:var(--bg3);border-radius:2px;margin:0 auto 14px"></div><div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><div style="width:44px;height:44px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:500;font-size:15px">${c.initials}</div><div><div style="font-size:17px;font-weight:500">${c.firstName} ${c.lastName}</div><div style="font-size:12px;color:var(--ink3)">${c.relationship} · <span style="color:${sc[c.status]||'var(--ink3)'}">${c.status}</span></div></div></div>${c.phone?`<a href="tel:${c.phone}" style="display:block;font-size:14px;color:var(--accent);text-decoration:none;margin-bottom:6px">${c.phone}</a>`:''}${c.email?`<div style="font-size:13px;color:var(--ink2);margin-bottom:6px">${c.email}</div>`:''}${c.notes?`<div style="font-size:12px;color:var(--ink2);line-height:1.6;padding:10px;background:#fff;border-radius:8px;border:1px solid var(--bg3);margin-bottom:10px">${c.notes}</div>`:''}${c.tags&&c.tags.length?`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:14px">${c.tags.map(t=>`<span style="font-size:10px;padding:2px 8px;background:var(--bg3);border-radius:4px;color:var(--ink2)">${t}</span>`).join('')}</div>`:''}<div style="font-size:12px;font-weight:500;color:var(--ink3);margin-bottom:8px">Move to:</div><div style="display:flex;gap:6px;margin-bottom:14px" id="mv-btns"></div><div style="display:flex;gap:6px">${c.phone?`<a href="tel:${c.phone}" class="btn btn-primary" style="flex:1;text-decoration:none;text-align:center;padding:10px">Call</a><a href="sms:${c.phone}" class="btn btn-outline" style="flex:1;text-decoration:none;text-align:center;padding:10px">Text</a>`:''}<button class="btn btn-outline" style="flex:1;padding:10px" onclick="this.closest('div[style*=fixed]').remove()">Close</button></div>`;
-ov.appendChild(cd);document.body.appendChild(ov);
-const mb=cd.querySelector('#mv-btns');['hot','warm','nurture'].forEach(s=>{const b=document.createElement('button');b.className='btn btn-outline';b.style.cssText='flex:1;padding:8px;font-size:12px;'+(c.status===s?'opacity:0.3':'');b.textContent=s.charAt(0).toUpperCase()+s.slice(1);b.onclick=()=>mvC(c.id,s,ov);mb.appendChild(b)})}
+    if (w===1) {
+      if (d===1) {
+        T('Import your phone contacts','Go to your phone contacts and add everyone you know — friends, family, classmates, coworkers. Goal: 150+ people.','high','setup',{t:'10 min'});
+        T('Set up your profile photo and bio','This appears on your website and all outgoing messages. Keep it warm and professional.','high','setup',{t:'5 min'});
+        T('Review your generated website','We built your site overnight with market data for your target towns. Check that everything looks right.','high','setup',{t:'5 min'});
+        T('Text your 10 closest people','Personal, individual texts to people who would pick up if you called. Use the draft message below as a starting point.','high','outreach',{t:'20 min',d:'sphere_initial'});
+        T('Study your market snapshot','Know your numbers cold: median price, days on market, inventory. You\'ll need them in every conversation.','medium','learning',{t:'5 min'});
+      } else if (d===2) {
+        T('Make 5 sphere calls','Call the 5 people most likely to know someone buying or selling. Start casual, mention real estate, ask the one question.','high','outreach',{t:'50 min'});
+        T('Log call outcomes','After each call, note who you spoke to, what they said, and any names they mentioned. This becomes your pipeline.','medium','setup',{t:'10 min'});
+      } else if (d===3) {
+        T('Approve your first market report','Your market report is ready with live data. Review the numbers and tap approve to publish across all channels.','high','content',{t:'3 min'});
+        T('Make 3 more sphere calls','Different people from yesterday. Keep building the habit of daily outreach.','high','outreach',{t:'30 min'});
+        T('Text everyone who didn\'t pick up yesterday','A short, casual follow-up doubles your contact rate from calls alone.','medium','follow-up',{t:'5 min',d:'sphere_followup'});
+      } else if (d===4) {
+        T('Follow up on warm responses','Did anyone from this week mention a name? Someone thinking about buying or selling? Get that introduction today.','high','follow-up',{t:'15 min',d:'warm_intro'});
+        T('Respond to any market questions','If someone texted back asking about the market, answer with real data. This positions you as the expert.','high','follow-up',{t:'10 min',d:'market_response'});
+        T('DM 5 people on social media','People from your sphere you haven\'t called yet. Comment on their post first, then DM naturally.','medium','outreach',{t:'15 min',d:'social_dm'});
+        T('Ask your broker about open house slots','Email or call: "I\'d love to sit any upcoming open houses." Get first in line for floor time.','medium','pipeline',{t:'5 min'});
+      } else if (d===5) {
+        T('Friday follow-up sweep','Reply to every unanswered text and DM. Close every open loop before the weekend.','high','follow-up',{t:'15 min'});
+        T('Add any new contacts to Groundwork','Anyone you met this week who isn\'t in the system yet — add them with notes.','high','setup',{t:'10 min'});
+        T('Approve your second piece of content','Your neighborhood guide or rate commentary is ready. One tap to publish.','medium','content',{t:'2 min'});
+        T('Review your first week\'s pipeline','Check the Pipeline tab. How many contacts? Anyone showing interest? What\'s your plan for next week?','medium','learning',{t:'5 min'});
+      } else if (d===6) {
+        T('Send 3 casual texts','Not about real estate — just "What are you up to this weekend?" Staying top of mind doesn\'t always mean talking about houses.','low','outreach',{t:'5 min'});
+        T('Drive your target neighborhoods','Spend 30 minutes driving around your market. Note for-sale signs, new construction, open houses. Know the streets.','medium','learning',{t:'30 min'});
+      } else if (d===7) {
+        T('Review your week 1 numbers','Open the Pipeline tab. How many conversations did you have? Any warm leads? How much content is live?','medium','learning',{t:'5 min'});
+        T('Plan your week 2 targets','Set a call goal for next week. Groundwork recommends 5 per day. Even 3 keeps momentum.','low','planning',{t:'5 min'});
+      }
+    } else if (w===2) {
+      if (d===1) {
+        T('Follow up with anyone who showed interest','If contacts from last week mentioned buying, selling, or a referral — they\'re your priority today.','high','follow-up',{t:'20 min'});
+        T('Call 5 new sphere contacts','Go deeper into your contact list. Every call is a chance for a referral.','high','outreach',{t:'30 min'});
+        T('Check on open house availability','Did your broker respond? If not, follow up. Persistence gets you floor time.','medium','pipeline',{t:'5 min'});
+      } else if (d===2) {
+        T('Deep follow-up with warm leads','Anyone who showed real interest — ask the qualifying questions: timeline, budget, pre-approval status.','high','follow-up',{t:'20 min'});
+        T('Send 3 matching listings','Find active listings that match what your warm leads described. Text with a personal note on each.','high','pipeline',{t:'20 min'});
+        T('Approve Southborough market report','Your second market report is ready. Review and publish.','medium','content',{t:'3 min'});
+      } else if (d===3) {
+        T('Make 5 sphere calls','Maintain the daily habit. The law of numbers is working for you.','high','outreach',{t:'30 min'});
+        T('Post your "streets to watch" content','Social post about hot streets in your market. Approve and publish.','medium','content',{t:'3 min'});
+        T('Engage with 10+ local social posts','Comment on posts from local businesses, community groups. Build visibility.','low','content',{t:'15 min'});
+      } else if (d===4) {
+        T('Prep for open house (if scheduled)','Groundwork generates your property briefing: comps, objections, talking points.','high','pipeline',{t:'15 min'});
+        T('Follow up on listings you sent','Did your warm leads like them? Offer to schedule showings.','high','follow-up',{t:'10 min'});
+        T('Connect with a senior agent at your brokerage','Ask for coffee or a quick call. Mentorship accelerates everything.','medium','pipeline',{t:'5 min'});
+      } else if (d===5) {
+        T('Friday sweep — close every thread','Every open text, DM, and voicemail. Log every new contact.','high','follow-up',{t:'20 min'});
+        T('Approve "First-time buyer mistakes" post','Educational content that positions you as knowledgeable. Great for Instagram.','medium','content',{t:'3 min'});
+        T('Review week 2 pipeline','You should have 2-4 warm leads now. Are you moving them forward?','medium','learning',{t:'5 min'});
+      } else if (d===6) {
+        T('Sit your open house (or attend a local event)','Get face-to-face with new people. Work the sign-in sheet if it\'s an open house.','high','pipeline',{t:'3 hrs'});
+        T('Post a recap on social','Photo + "Great energy at today\'s open house!" Shows you\'re active and engaged.','low','content',{t:'5 min'});
+      } else if (d===7) {
+        T('Log all new contacts from this week','Every person from the open house or events — enter with detailed notes.','high','setup',{t:'15 min'});
+        T('Set week 3 goals','Target: 25 calls, 2 content pieces, 1 open house, and move at least 1 lead forward.','low','planning',{t:'3 min'});
+      }
+    } else if (w===3) {
+      if (d===1) {
+        T('Hot lead check','Your warmest contacts from the past 2 weeks — are any of them ready for showings? Schedule them.','high','follow-up',{t:'15 min'});
+        T('Follow up on any new referrals','If your sphere sent you a name, call that person today. First impressions matter.','high','pipeline',{t:'15 min'});
+        T('Make 5 more sphere calls','The funnel never stops. Keep filling the top even when you have active leads.','high','outreach',{t:'30 min'});
+      } else if (d===2) {
+        T('Schedule showings for hot leads','Find 3-4 listings that match their criteria. Book Saturday appointments.','high','pipeline',{t:'30 min'});
+        T('Send your newsletter','Market stats, featured listings, and a personal note to your entire sphere. Approve and send.','medium','content',{t:'10 min'});
+        T('Post a personal update on social','Share what you\'re learning, what you love about the job. Authentic content performs best.','low','content',{t:'10 min'});
+      } else if (d===3) {
+        T('Prep showing materials','For each property: comps, pros/cons, neighborhood context, talking points. Be more prepared than they expect.','high','pipeline',{t:'30 min'});
+        T('Nurture warm leads','Send a new listing to anyone who\'s warm but not yet hot. Keep the conversation alive.','medium','follow-up',{t:'10 min'});
+      } else if (d===4) {
+        T('Confirm weekend showings','Send your leads the tour itinerary: addresses, times, your notes on each property.','high','pipeline',{t:'10 min'});
+        T('Ask your broker about new listings coming to market','Pocket listings and coming-soons give you an edge. Ask every week.','medium','pipeline',{t:'5 min'});
+        T('Make 3 sphere calls','Even with active deals, keep prospecting.','medium','outreach',{t:'20 min'});
+      } else if (d===5) {
+        T('Print showing materials for Saturday','Property sheets, comp summaries, business cards. Be ready.','high','pipeline',{t:'15 min'});
+        T('Friday sweep','Close every open thread. Answer every message. Nothing carries into the weekend unresolved.','high','follow-up',{t:'15 min'});
+      } else if (d===6) {
+        T('Show homes to your leads','Listen to their reactions. Take notes. Follow up tonight with your top recommendation.','high','pipeline',{t:'4 hrs'});
+        T('Post a showing day recap','Behind-the-scenes content: "Spent the day showing homes in [your area]." This is social proof.','low','content',{t:'5 min'});
+      } else if (d===7) {
+        T('Debrief all showings','Log detailed notes on each property visit. What did they like? What didn\'t work? Next steps.','high','follow-up',{t:'20 min'});
+        T('Send follow-ups with your top picks','For each lead: "My top recommendation for you is [address]. Here\'s why..."','high','follow-up',{t:'15 min'});
+        T('Week 3 review','You should have active leads, scheduled showings, and growing content. The system is working.','medium','learning',{t:'5 min'});
+      }
+    } else if (w===4) {
+      if (d===1) {
+        T('Check: are any leads ready to make an offer?','If someone loved a property, it\'s time for the offer conversation. Pull comps, discuss strategy.','high','pipeline',{t:'20 min'});
+        T('Advance your other warm leads','Schedule more showings, send new listings, keep them moving through the funnel.','high','follow-up',{t:'15 min'});
+        T('Continue sphere outreach — 5 calls','Your pipeline has active leads, but you can\'t stop filling the top of the funnel.','medium','outreach',{t:'30 min'});
+      } else if (d===2) {
+        T('If an offer is happening: prep the paperwork','Work with your broker to prepare offer documents. Price, contingencies, timeline.','high','pipeline',{t:'30 min'});
+        T('If no offer yet: schedule more showings','Keep the momentum going. More properties seen = faster decision.','high','pipeline',{t:'20 min'});
+        T('Approve new content batch','Fresh market update and social posts ready for the week.','medium','content',{t:'5 min'});
+      } else if (d===3) {
+        T('Active deal management','Whether it\'s showings, offer negotiations, or inspections — this is your primary focus today.','high','pipeline',{t:'3 hrs'});
+        T('Make 3 sphere calls','Never let the pipeline go dry, even when deals are active.','medium','outreach',{t:'20 min'});
+      } else if (d===4) {
+        T('Follow up on all active leads','Status check on every person in your pipeline. Move them forward or identify what\'s stalling.','high','follow-up',{t:'20 min'});
+        T('Sit an open house if available','Even with active deals, keep generating new pipeline.','medium','pipeline',{t:'3 hrs'});
+        T('Post a "month 1 in review" on social','Personal, reflective content about your journey. Your sphere will engage with this.','low','content',{t:'10 min'});
+      } else if (d===5) {
+        T('Biggest Friday sweep yet','You have multiple active threads across hot leads, warm leads, and sphere contacts. Close every loop.','high','follow-up',{t:'30 min'});
+        T('Review your full month 1 pipeline','From zero to where you are now. Count your contacts, active leads, content published, showings completed.','medium','learning',{t:'10 min'});
+      } else if (d===6) {
+        T('Showings, open houses, or offer negotiations','Your busiest weekend yet. This is the job — and you\'re doing it.','high','pipeline',{t:'4 hrs'});
+      } else if (d===7) {
+        T('Month 1 complete — review and celebrate','You\'ve done more in 4 weeks than most new agents do in 4 months. Look at your numbers and be proud.','medium','learning',{t:'10 min'});
+        T('Set month 2 goals','Groundwork recommends: close your first deal, grow to 300+ contacts, 2 open houses per week, SEO ranking for 5+ keywords.','medium','planning',{t:'10 min'});
+      }
+    }
+
+    // Hydrate done state from server
+    t.forEach(task => {
+      const key = 'w' + w + 'd' + d + 't' + task.id;
+      if (s.completedTasks && s.completedTasks.includes(key)) task.done = true;
+    });
+
+    s.tasks.items = t;
+    return t;
+  },
+
+  tip(d, w) {
+    const tips = {
+      1: { 1:'Today is about one thing: building your contact list. No selling, no pitching — just getting everyone you know into the system.',
+           2:'Week 2 starts with follow-up, not new calls. The people who showed interest last week are your priority.',
+           3:'You have warm leads and possibly referrals. This is real pipeline now — not theoretical.',
+           4:'Active leads, showings on the books, content ranking. Don\'t ease up on the fundamentals.' },
+      2: { 1:'Today\'s goal: 5 real conversations. Phone calls, not texts. Check the Coaching tab if you need the script.',
+           2:'Go deeper with your warm leads. Ask the qualifying questions: timeline, budget, pre-approval.',
+           3:'Warm leads need attention. If someone\'s ready for showings, schedule them this week.',
+           4:'Offer conversations might happen this week. Pull comps, discuss strategy, make your leads feel prepared.' },
+      3: { 1:'Your first content is ready to publish. Approve it and keep making calls — you\'re building two things at once now.',
+           2:'Keep outreach going even while nurturing warm leads. Pipeline building never stops.',
+           3:'Prep is everything. The showing tour this weekend is your chance to prove your value in person.',
+           4:'Your active leads need you, but so does your future pipeline. Balance both.' },
+      4: { 1:'Did anyone mention a referral? Getting that introduction is the highest-value move you can make today.',
+           2:'Open house prep or door knocking — either way, you\'re getting in front of new people.',
+           3:'Confirm showings, prep materials, and make sure your leads feel taken care of heading into the weekend.',
+           4:'If an offer is live, stay focused and responsive. If not, keep showing and keep building.' },
+      5: { 1:'Friday is follow-up day. Every loose thread from the week gets tied up before the weekend.',
+           2:'Week 2 wrap-up. You should see real improvement: more warm leads, more conversations, content indexing.',
+           3:'You\'re ahead of schedule with active leads, scheduled showings, and growing content authority.',
+           4:'Month 1 in the books. From zero to a real pipeline. The system compounds from here.' },
+      6: { 1:'Light day. Weekends are when your sphere is relaxed and scrolling — perfect for casual outreach.',
+           2:'Showing day or community event day. Either way, you\'re face to face with potential leads.',
+           3:'Showing day. This is the work that leads directly to commission checks.',
+           4:'Your busiest weekend yet. Showings, open houses, and possibly live offers. You\'re an agent now.' },
+      7: { 1:'You just finished the hardest week. Most new agents never get this far. You did.',
+           2:'Two weeks complete. Your pipeline exists. Your content is live. The foundation is real.',
+           3:'Week 3 done. You\'ve shown homes, managed real leads, and built content authority.',
+           4:'Month 1 complete. You\'re ahead of the curve. The average new agent would still be figuring out their CRM.' }
+    };
+    return (tips[d] && tips[d][w]) || '';
+  },
+
+  theme(d) {
+    return { 1:'Build your foundation', 2:'Start real conversations', 3:'Establish your presence', 4:'Deepen and expand', 5:'Close every loop', 6:'Weekend hustle', 7:'Review and reset' }[d] || '';
+  },
+
+  catLabel(c) {
+    return { setup:'Setup', outreach:'Revenue activity', content:'Content', 'follow-up':'Follow-up', learning:'Learning', pipeline:'Pipeline', planning:'Planning' }[c] || c;
+  },
+
+  catColor(c) {
+    return {
+      setup:      { b:'var(--c-blue-bg)',   t:'var(--c-blue-text)' },
+      outreach:   { b:'var(--c-coral-bg)',  t:'var(--c-coral-text)' },
+      content:    { b:'var(--c-green-bg)',  t:'var(--c-green-text)' },
+      'follow-up':{ b:'var(--c-amber-bg)',  t:'var(--c-amber-text)' },
+      learning:   { b:'var(--c-purple-bg)', t:'var(--c-purple-text)' },
+      pipeline:   { b:'var(--c-teal-bg)',   t:'var(--c-teal-text)' },
+      planning:   { b:'var(--c-purple-bg)', t:'var(--c-purple-text)' }
+    }[c] || { b:'var(--c-blue-bg)', t:'var(--c-blue-text)' };
+  }
+};
+
+// ===== VIEW RENDERING =====
+let cv = 'today';
+function navTo(v) {
+  cv = v;
+  document.querySelectorAll('.tb').forEach(b => b.classList.toggle('active', b.dataset.view === v));
+  document.querySelectorAll('.vp').forEach(p => p.classList.toggle('active', p.id === 'view-' + v));
+  rndr();
+}
+function rndr() { ({today:rToday, pipeline:rPipe, content:rCont, market:rMkt, coaching:rCoach})[cv]?.(); }
+
+// ----- TODAY -----
+function rToday() {
+  const el = document.getElementById('view-today'); if (!el) return;
+  const d = S.agent.dayInWeek||1, w = S.agent.weekNumber||1;
+  const dn = ['','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const dd = ['','Apr 7','Apr 8','Apr 9','Apr 10','Apr 11','Apr 12','Apr 13'];
+  const wo = {1:'Apr 7–13',2:'Apr 14–20',3:'Apr 21–27',4:'Apr 28 – May 4'};
+  const tasks = TE.gen(S), tip = TE.tip(d,w), theme = TE.theme(d);
+  const comp = tasks.filter(t=>t.done).length, total = tasks.length;
+  const pct = total ? Math.round(comp/total*100) : 0;
+  const groups = {}; tasks.forEach(t => { if(!groups[t.cat]) groups[t.cat]=[]; groups[t.cat].push(t); });
+
+  let h = `<div class="th"><div class="tg">${d<=5?'Good morning':'Hey'}, ${S.agent.firstName||'there'}</div><div class="txc">${dn[d]||''}, ${dd[d]||''} · Week ${w}, Day ${d} — ${theme}</div></div>`;
+
+  // Week selector
+  h += '<div class="ws"><span class="wsl">Week</span>';
+  for (let i=1; i<=4; i++) h += `<button class="wp ${i===w?'active':''}" onclick="chgWeek(${i})">${i}</button>`;
+  h += `<span class="wsd">${wo[w]||''}</span></div>`;
+
+  // Day selector
+  h += '<div class="wn">';
+  const sd = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  for (let i=1; i<=7; i++) h += `<button class="dp ${i===d?'active':i<d?'completed':''}" onclick="chgDay(${i})"><span class="dpl">${sd[i-1]}</span>${i}</button>`;
+  h += '</div>';
+
+  // Progress
+  h += `<div class="prb"><div class="prm"><span>${comp}/${total} tasks</span><span>${pct}%</span></div><div class="prt"><div class="prf" style="width:${pct}%"></div></div></div>`;
+
+  // Motivational infographic
+  const contactCount = S.pipeline.total || S.contacts.length || 0;
+  const leadCount = (S.pipeline.hot||0) + (S.pipeline.warm||0);
+  const pubCount = S.pipeline.contentPublished || 0;
+  const tasksDone = S.pipeline.tasksCompleted || 0;
+  const ringPct = Math.min(100, Math.round((contactCount / 150) * 100));
+  const ringDash = (ringPct / 100) * 251.2;
+  h += `<div style="background:#fff;border:1px solid var(--bg3);border-radius:var(--radius-lg);padding:16px;margin-bottom:14px;display:flex;align-items:center;gap:16px">
+    <div style="position:relative;width:72px;height:72px;flex-shrink:0">
+      <svg viewBox="0 0 90 90" style="width:72px;height:72px;transform:rotate(-90deg)">
+        <circle cx="45" cy="45" r="40" fill="none" stroke="var(--bg3)" stroke-width="6"/>
+        <circle cx="45" cy="45" r="40" fill="none" stroke="var(--accent)" stroke-width="6" stroke-dasharray="${ringDash} 251.2" stroke-linecap="round"/>
+      </svg>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500">${contactCount}</div>
+    </div>
+    <div style="flex:1;min-width:0">
+      <div style="font-size:14px;font-weight:500;margin-bottom:6px">${contactCount >= 150 ? 'Sphere goal reached!' : contactCount + ' of 150 contacts'}</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <div style="font-size:12px;color:var(--ink2)"><span style="font-weight:500;color:var(--accent)">${leadCount}</span> active lead${leadCount!==1?'s':''}</div>
+        <div style="font-size:12px;color:var(--ink2)"><span style="font-weight:500;color:var(--accent)">${pubCount}</span> content published</div>
+        <div style="font-size:12px;color:var(--ink2)"><span style="font-weight:500;color:var(--accent)">${tasksDone}</span> tasks done</div>
+      </div>
+      ${contactCount < 10 ? `<div style="font-size:11px;color:var(--coral);margin-top:6px;font-weight:500">Import your contacts to get started →</div>` : ''}
+    </div>
+  </div>`;
+
+  // Coaching tip
+  if (tip) h += `<div class="ct">${tip}</div>`;
+
+  // Task groups
+  for (const [cat, ct] of Object.entries(groups)) {
+    const cc = TE.catColor(cat);
+    h += `<div class="tgr"><div class="tgh"><span class="tgt">${TE.catLabel(cat)}</span><span class="tgb" style="background:${cc.b};color:${cc.t}">${ct.length}</span></div>`;
+    ct.forEach(t => {
+      const dr = t.draft ? S.drafts[t.draft] : null;
+      const co = t.cid ? S.contacts.find(c => c.id === t.cid) : null;
+      h += `<div class="tc ${t.done?'done':''}"><div class="tr"><button class="tck ${t.done?'checked':''}" onclick="tgl(${t.id})"></button><div class="tbd"><div class="tct">${t.title}</div><div class="tcd">${t.detail}</div>`;
+      if (co) h += `<div class="tcp"><span class="ca" style="background:var(--c-blue-bg);color:var(--c-blue-text)">${co.initials||''}</span><span class="cn">${co.firstName} ${co.lastName||''}</span><span class="cm">${co.relationship||''}</span></div>`;
+      h += `</div>${t.time?`<span class="tti">${t.time}</span>`:''}</div>`;
+      if (dr) h += `<div class="db"><div class="dh"><span>Draft message</span><button class="dcb" onclick="cpd(this)">Copy</button></div><div class="dtx">${dr}</div></div>`;
+      h += '</div>';
+    });
+    h += '</div>';
+  }
+
+  // Week summary on day 7
+  if (d === 7) {
+    const tot = S.pipeline.total || S.contacts.length;
+    const leads = (S.pipeline.hot||0) + (S.pipeline.warm||0);
+    const pub = S.pipeline.contentPublished || 0;
+    const tc = S.pipeline.tasksCompleted || 0;
+    h += `<div class="wsu"><div class="wsut">Week ${w} results</div><div class="sgr"><div class="sst"><div class="ssn">${tot}</div><div class="ssl">Contacts</div></div><div class="sst"><div class="ssn">${tc}</div><div class="ssl">Tasks done</div></div><div class="sst"><div class="ssn">${leads}</div><div class="ssl">Active leads</div></div><div class="sst"><div class="ssn">${pub}</div><div class="ssl">Content live</div></div></div></div>`;
+  }
+  el.innerHTML = h;
+}
+
+// ----- PIPELINE -----
+function rPipe() {
+  const el = document.getElementById('view-pipeline'); if (!el) return;
+  const hot = S.contacts.filter(c=>c.status==='hot');
+  const warm = S.contacts.filter(c=>c.status==='warm');
+  const nur = S.contacts.filter(c=>c.status==='nurture');
+  const tot = S.contacts.length;
+  const sC = {hot:'var(--c-coral-bg)',warm:'var(--c-amber-bg)',nurture:'var(--c-teal-bg)'};
+  const sT = {hot:'var(--c-coral-text)',warm:'var(--c-amber-text)',nurture:'var(--c-teal-text)'};
+
+  let h = `<div class="vh"><div class="vt">Pipeline</div><div class="vs">${S.pipeline.total||tot} contacts · Week ${S.agent.weekNumber||1}</div></div>`;
+  h += `<div class="pps"><div class="pp2"><div class="ppn">${hot.length}</div><div class="ppl">Hot</div></div><div class="pp2"><div class="ppn">${warm.length}</div><div class="ppl">Warm</div></div><div class="pp2"><div class="ppn">${nur.length}</div><div class="ppl">Nurture</div></div><div class="pp2"><div class="ppn">${S.pipeline.contentPublished||0}</div><div class="ppl">Published</div></div></div>`;
+  h += `<div class="fun"><div class="fr"><div class="fl">Hot</div><div class="fbw"><div class="fb hot" style="width:${Math.max(4,hot.length/(tot||1)*500)}%"></div></div><div class="fco">${hot.length}</div></div><div class="fr"><div class="fl">Warm</div><div class="fbw"><div class="fb warm" style="width:${Math.max(4,warm.length/(tot||1)*500)}%"></div></div><div class="fco">${warm.length}</div></div><div class="fr"><div class="fl">Nurture</div><div class="fbw"><div class="fb nurture" style="width:100%"></div></div><div class="fco">${nur.length}</div></div></div>`;
+  h += `<div class="cs"><input id="csi" placeholder="Search contacts..." oninput="fltC(this.value)"></div>`;
+  h += `<div class="ft2"><button class="ft3 active" onclick="fltS('all',this)">All (${tot})</button><button class="ft3" onclick="fltS('hot',this)">Hot (${hot.length})</button><button class="ft3" onclick="fltS('warm',this)">Warm (${warm.length})</button><button class="ft3" onclick="fltS('nurture',this)">Nurture (${nur.length})</button></div>`;
+  h += `<div class="clh"><span>Contacts</span><button class="acb" onclick="sAC()">+ Add</button></div><div class="cl" id="cl2">`;
+  S.contacts.forEach(c => {
+    h += `<div class="cr" data-status="${c.status}" data-name="${c.firstName} ${c.lastName||''}" onclick="sCD(${c.id})"><div class="cav" style="background:${sC[c.status]||sC.nurture};color:${sT[c.status]||sT.nurture}">${c.initials||''}</div><div class="ci"><div class="cna">${c.firstName} ${c.lastName||''}</div><div class="cme">${c.relationship||''}</div></div><div class="csb" style="background:${sC[c.status]||sC.nurture};color:${sT[c.status]||sT.nurture}">${c.status}</div></div>`;
+  });
+  h += `</div><div class="acf" id="acf2" style="display:none"><div class="ft">Add a contact</div><div class="fr2"><input id="nf2" placeholder="First name"><input id="nl2" placeholder="Last name"></div><input id="np2" placeholder="Phone number"><input id="nr2" placeholder="How do you know them?"><textarea id="nn2" placeholder="Notes — anything useful for follow-up"></textarea><div class="fa"><button class="btn btn-outline" onclick="hAC()">Cancel</button><button class="btn btn-primary" onclick="svC()">Save contact</button></div></div>`;
+  el.innerHTML = h;
+}
+
+// ----- CONTENT -----
+function rCont() {
+  const el = document.getElementById('view-content'); if (!el) return;
+  const pub = S.content.pieces.filter(p => p.status === 'published').length;
+  const so = {ready:0,generating:1,draft:2,scheduled:3,published:4};
+  const sorted = [...S.content.pieces].sort((a,b) => (so[a.status]||5)-(so[b.status]||5));
+  let h = `<div class="vh"><div class="vt">Content</div><div class="vs">${S.content.pieces.length} pieces · ${pub} published</div></div>`;
+  sorted.forEach(p => {
+    const sc = {ready:{l:'Ready to publish',b:'var(--c-green-bg)',c:'var(--c-green-text)',a:1},generating:{l:'Generating',b:'var(--c-purple-bg)',c:'var(--c-purple-text)',a:0},draft:{l:'Draft',b:'var(--c-amber-bg)',c:'var(--c-amber-text)',a:2},scheduled:{l:'Scheduled',b:'var(--c-blue-bg)',c:'var(--c-blue-text)',a:0},published:{l:'Published',b:'var(--c-teal-bg)',c:'var(--c-teal-text)',a:0}}[p.status];
+    if (!sc) return;
+    h += `<div class="cc"><div class="cto"><span class="cbg" style="background:${sc.b};color:${sc.c}">${sc.l}</span>${p.town?`<span class="ctw">${p.town}</span>`:''}</div><div class="ctt">${p.title}</div>${p.preview?`<div class="cpv">${p.preview}</div>`:''}<div class="cch">${(p.channels||[]).map(c=>`<span class="cht">${c}</span>`).join('')}</div>${sc.a===1?`<div class="cac"><button class="btn btn-primary" onclick="pubContent(${p.id})">Approve & publish</button></div>`:sc.a===2?`<div class="cac"><button class="btn btn-outline">Edit draft</button></div>`:''}</div>`;
+  });
+  el.innerHTML = h;
+}
+
+// ----- MARKET -----
+function rMkt() {
+  const el = document.getElementById('view-market'); if (!el) return;
+  let h = `<div class="vh"><div class="vt">Market intel</div><div class="vs">Live data · pull this up during any conversation</div></div>`;
+  for (const [tw, d] of Object.entries(S.mkt)) {
+    h += `<div class="mc"><div class="mch"><div class="mtn">${tw}</div><div class="msu">${d.sum}</div></div>`;
+    h += `<div class="mg"><div class="ms"><div class="msv">$${(d.mp/1000).toFixed(0)}K</div><div class="msl">Median price</div><div class="msd up">+${d.pc}%</div></div><div class="ms"><div class="msv">${d.dom}</div><div class="msl">Days on market</div><div class="msd ${d.dc<0?'up':'dn'}">${d.dc}d</div></div><div class="ms"><div class="msv">${d.stl}%</div><div class="msl">Sale-to-list</div><div class="msd up">${d.stl>100?'Over asking':'At ask'}</div></div><div class="ms"><div class="msv">${d.mi}</div><div class="msl">Months supply</div><div class="msd up">${d.mi<3?"Seller's mkt":'Balanced'}</div></div></div>`;
+    h += `<div class="mtt"><div class="mtl">What to say with this data</div><div class="mttx">"${tw.split(',')[0]} is tight right now — homes selling in about ${d.dom} days, ${d.stl>100?'most above asking':'prices holding steady'}. ${d.mi<3?"For sellers, this is about as strong as it gets. For buyers, I'm tracking inventory daily — want me to set up alerts?":'Balanced market — good opportunity for buyers to negotiate.'}"</div></div>`;
+    if (d.rs) {
+      h += '<div class="rsa"><div class="rst">Recent sales</div>';
+      d.rs.forEach(s => { h += `<div class="rsr"><div class="rsa2">${s.a}</div><div class="rsp">$${(s.p/1000).toFixed(0)}K</div><div class="rsd">${s.d} days</div></div>`; });
+      h += '</div>';
+    }
+    h += '</div>';
+  }
+  el.innerHTML = h;
+}
+
+// ----- COACHING -----
+function rCoach() {
+  const el = document.getElementById('view-coaching'); if (!el) return;
+  const scripts = [
+    { t:'The sphere call script', x:'Use when calling friends, family, acquaintances', s:[
+      {l:'Open casually',t:'"Hey! How\'s everything going? Wanted to catch up real quick..."'},
+      {l:'Mention real estate naturally',t:'"So I just started in real estate — working the [your area]. Pretty excited about it."'},
+      {l:'Ask the one question',t:'"Do you know anyone who\'s been thinking about buying or selling? Even casually — I\'d love to be helpful."'},
+      {l:'If they say no',t:'That\'s perfectly fine — thank them, ask about their life, move on. They\'ll remember you asked when someone mentions real estate next month.'},
+      {l:'If they say yes',t:'"That\'s great! Would you be comfortable making an intro? Or I can reach out directly if you share their info — totally up to you."'}
+    ]},
+    { t:'When someone asks "what\'s my home worth?"', x:'The most common seller question — and your chance to shine', s:[
+      {l:'Don\'t guess',t:'Pull up Groundwork\'s market data on your phone. Let them see you looking at real numbers — it builds trust.'},
+      {l:'Give a range, not a point',t:'"Based on recent comps in your area, homes like yours are selling between $X and $Y. The exact number depends on condition, updates, and timing."'},
+      {l:'Offer the next step',t:'"I\'d love to do a proper comp analysis for you — it\'s free and takes me about a day. I\'ll pull recent sales on your street and give you a detailed number."'}
+    ]},
+    { t:'Open house conversation starters', x:'For engaging visitors who walk in the door', s:[
+      {l:'Welcome warmly',t:'"Hi! Welcome — take your time looking around. I\'m [your name]. Are you familiar with this neighborhood?"'},
+      {l:'Ask about their search',t:'"Are you looking in this area specifically, or keeping things open?" and "How\'s your timeline looking?"'},
+      {l:'Capture their info naturally',t:'"I\'d love to send you any new listings that match what you\'re looking for. What\'s the best number to text you at?"'},
+      {l:'Before they leave',t:'"I put together a sheet with recent sales in this neighborhood. Can I text it to you?"'}
+    ]},
+    { t:'The referral ask', x:'When someone mentions a friend or family member', s:[
+      {l:'Confirm the lead',t:'"Oh interesting — are they actively looking, or just starting to think about it?"'},
+      {l:'Ask for the intro',t:'"Would you be comfortable connecting us? I\'d love to be helpful — absolutely no pressure on them."'},
+      {l:'Make it effortless',t:'"You could just send a quick group text — something like \'Hey, this is my friend [your name], she knows the [area] market really well.\'"'}
+    ]}
+  ];
+
+  let h = `<div class="vh"><div class="vt">Coaching</div><div class="vs">Scripts, objection handling, and message templates</div></div>`;
+
+  scripts.forEach(s => {
+    h += `<div class="scc"><div class="sch"><div class="sct">${s.t}</div><div class="scx">${s.x}</div></div>`;
+    s.s.forEach((st,i) => { h += `<div class="scs"><div class="scn">${i+1}</div><div class="scb"><div class="scl">${st.l}</div><div class="scst">${st.t}</div></div></div>`; });
+    h += '</div>';
+  });
+
+  h += '<div class="obs"><div class="obt">Objection handling</div><div class="obsu">What to say when clients push back</div>';
+  S.obj.forEach(o => { h += `<div class="obc"><div class="obq">${o.q}</div><div class="oba">${o.a}</div></div>`; });
+  h += '</div>';
+
+  h += '<div class="drs"><div class="drt">Message templates</div><div class="drsb">Tap to copy. Edit before sending — make it sound like you.</div>';
+  const dl = {sphere_initial:'First outreach to sphere',sphere_followup:'Voicemail follow-up text',market_response:'Responding to a market question',warm_intro:'Asking for a referral intro',open_house_followup:'Open house follow-up',social_dm:'Social media DM',check_in:'Warm lead check-in',newsletter:'Newsletter invite'};
+  for (const [k,t] of Object.entries(S.drafts)) {
+    h += `<div class="drc"><div class="drh"><span>${dl[k]||k}</span><button class="dcb" onclick="cpd(this)">Copy</button></div><div class="drtx">${t}</div></div>`;
+  }
+  h += '</div>';
+  el.innerHTML = h;
+}
+
+// ===== GLOBAL ACTIONS =====
+async function tgl(id) {
+  const t = S.tasks.items.find(x => x.id === id); if (!t) return;
+  t.done = !t.done;
+  const key = 'w' + (S.agent.weekNumber||1) + 'd' + (S.agent.dayInWeek||1) + 't' + id;
+  try {
+    if (t.done) {
+      S.completedTasks.push(key);
+      await api.post('/tasks/complete', { week:S.agent.weekNumber||1, day:S.agent.dayInWeek||1, taskKey:key });
+    } else {
+      S.completedTasks = S.completedTasks.filter(k => k !== key);
+      await api.post('/tasks/uncomplete', { week:S.agent.weekNumber||1, day:S.agent.dayInWeek||1, taskKey:key });
+    }
+  } catch(e) { console.error(e); }
+  rToday();
+}
+
+async function chgWeek(w) {
+  S.agent.weekNumber = w; S.agent.dayInWeek = 1;
+  try {
+    await api.patch('/me', { weekNumber:w, dayInWeek:1 });
+    const ct = await api.get('/tasks/completed?week='+w+'&day=1');
+    S.completedTasks = ct || [];
+    S.pipeline = await api.get('/pipeline');
+  } catch(e) { console.error(e); }
+  document.getElementById('trb').textContent = (S.agent.trialDaysLeft||90) + ' days left';
+  rToday();
+}
+
+async function chgDay(d) {
+  S.agent.dayInWeek = d;
+  try {
+    await api.patch('/me', { dayInWeek:d });
+    const ct = await api.get('/tasks/completed?week='+(S.agent.weekNumber||1)+'&day='+d);
+    S.completedTasks = ct || [];
+  } catch(e) { console.error(e); }
+  rToday();
+}
+
+function cpd(btn) {
+  const p = btn.closest('.db,.drc');
+  const el = p ? p.querySelector('.dtx,.drtx') : null;
+  if (!el) return;
+  navigator.clipboard.writeText(el.textContent).catch(() => {});
+  btn.textContent = 'Copied!';
+  setTimeout(() => btn.textContent = 'Copy', 1500);
+}
+
+function sAC() { document.getElementById('acf2').style.display = 'block'; }
+function hAC() { document.getElementById('acf2').style.display = 'none'; }
+
+async function svC() {
+  const f = document.getElementById('nf2').value.trim();
+  const l = document.getElementById('nl2').value.trim();
+  if (!f) { alert('Please enter a first name.'); return; }
+  try {
+    await api.post('/contacts', {
+      firstName: f, lastName: l,
+      phone: document.getElementById('np2').value.trim(),
+      relationship: document.getElementById('nr2').value.trim() || 'Contact',
+      notes: document.getElementById('nn2').value.trim(),
+      tags: []
+    });
+    S.contacts = await api.get('/contacts');
+    S.pipeline = await api.get('/pipeline');
+    ['nf2','nl2','np2','nr2','nn2'].forEach(id => document.getElementById(id).value = '');
+    hAC();
+    rPipe();
+  } catch(e) { alert(e.message); }
+}
+
+function fltC(q) {
+  q = q.toLowerCase();
+  document.querySelectorAll('#cl2 .cr').forEach(r => {
+    r.style.display = r.dataset.name.toLowerCase().includes(q) ? 'flex' : 'none';
+  });
+}
+
+function fltS(s, btn) {
+  document.querySelectorAll('.ft3').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#cl2 .cr').forEach(r => {
+    r.style.display = (s === 'all' || r.dataset.status === s) ? 'flex' : 'none';
+  });
+}
+
+async function pubContent(id) {
+  try {
+    await api.patch('/content/' + id, { status: 'published' });
+    S.content.pieces = await api.get('/content');
+    S.pipeline = await api.get('/pipeline');
+    rCont();
+  } catch(e) { alert(e.message); }
+}
+
+function sCD(id) {
+  const c = S.contacts.find(x => x.id === id); if (!c) return;
+  const sc = {hot:'var(--coral)',warm:'var(--amber)',nurture:'var(--teal)'};
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:200;display:flex;align-items:flex-end;justify-content:center';
+  ov.onclick = e => { if(e.target===ov) ov.remove(); };
+  const cd = document.createElement('div');
+  cd.style.cssText = 'background:var(--bg);border-radius:14px 14px 0 0;padding:20px 20px 28px;width:100%;max-width:600px;max-height:75vh;overflow-y:auto';
+  cd.innerHTML = `
+    <div style="width:36px;height:4px;background:var(--bg3);border-radius:2px;margin:0 auto 14px"></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+      <div style="width:44px;height:44px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:500;font-size:15px">${c.initials||''}</div>
+      <div>
+        <div style="font-size:17px;font-weight:500">${c.firstName} ${c.lastName||''}</div>
+        <div style="font-size:12px;color:var(--ink3)">${c.relationship||'Contact'} · <span style="color:${sc[c.status]||'var(--ink3)'}">${c.status}</span></div>
+      </div>
+    </div>
+    ${c.phone?`<a href="tel:${c.phone}" style="display:block;font-size:14px;color:var(--accent);text-decoration:none;margin-bottom:6px">${c.phone}</a>`:''}
+    ${c.notes?`<div style="font-size:12px;color:var(--ink2);line-height:1.6;padding:10px;background:#fff;border-radius:8px;border:1px solid var(--bg3);margin-bottom:10px">${c.notes}</div>`:''}
+    ${c.tags&&c.tags.length?`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:14px">${c.tags.map(t=>`<span style="font-size:10px;padding:2px 8px;background:var(--bg3);border-radius:4px;color:var(--ink2)">${t}</span>`).join('')}</div>`:''}
+    <div style="font-size:12px;font-weight:500;color:var(--ink3);margin-bottom:8px">Move to:</div>
+    <div style="display:flex;gap:6px;margin-bottom:14px">
+      <button class="btn btn-outline" style="flex:1;padding:8px;font-size:12px;${c.status==='hot'?'opacity:0.3':''}" onclick="mvC(${c.id},'hot',this)">Hot</button>
+      <button class="btn btn-outline" style="flex:1;padding:8px;font-size:12px;${c.status==='warm'?'opacity:0.3':''}" onclick="mvC(${c.id},'warm',this)">Warm</button>
+      <button class="btn btn-outline" style="flex:1;padding:8px;font-size:12px;${c.status==='nurture'?'opacity:0.3':''}" onclick="mvC(${c.id},'nurture',this)">Nurture</button>
+    </div>
+    <div style="display:flex;gap:6px">
+      ${c.phone?`<a href="tel:${c.phone}" class="btn btn-primary" style="flex:1;text-decoration:none;text-align:center;padding:10px">Call</a>
+      <a href="sms:${c.phone}" class="btn btn-outline" style="flex:1;text-decoration:none;text-align:center;padding:10px">Text</a>`:''}
+      <button class="btn btn-outline" style="flex:1;padding:10px" onclick="this.closest('div[style*=fixed]').remove()">Close</button>
+    </div>`;
+  ov.appendChild(cd);
+  document.body.appendChild(ov);
+}
+
+// ===== MARKET TYPEAHEAD =====
+const US_CITIES = ['Marlborough, MA','Southborough, MA','Northborough, MA','Westborough, MA','Shrewsbury, MA','Hudson, MA','Framingham, MA','Natick, MA','Hopkinton, MA','Ashland, MA','Holliston, MA','Milford, MA','Grafton, MA','Upton, MA','Worcester, MA','Boston, MA','Cambridge, MA','Somerville, MA','Newton, MA','Brookline, MA','Wellesley, MA','Needham, MA','Lexington, MA','Concord, MA','Sudbury, MA','Wayland, MA','Weston, MA','Dover, MA','Sherborn, MA','Medfield, MA','Millis, MA','Franklin, MA','Medway, MA','Bellingham, MA','Norfolk, MA','Walpole, MA','Sharon, MA','Canton, MA','Stoughton, MA','Easton, MA','Brockton, MA','Plymouth, MA','Quincy, MA','Weymouth, MA','Hingham, MA','Norwell, MA','Scituate, MA','Cohasset, MA','Duxbury, MA','Marshfield, MA','Austin, TX','Dallas, TX','Houston, TX','San Antonio, TX','Fort Worth, TX','Nashville, TN','Charlotte, NC','Raleigh, NC','Denver, CO','Phoenix, AZ','Scottsdale, AZ','Tampa, FL','Orlando, FL','Miami, FL','Jacksonville, FL','Atlanta, GA','Chicago, IL','Seattle, WA','Portland, OR','San Diego, CA','Los Angeles, CA','San Francisco, CA','Sacramento, CA','Las Vegas, NV','Minneapolis, MN','Indianapolis, IN','Columbus, OH','Cincinnati, OH','Cleveland, OH','Pittsburgh, PA','Philadelphia, PA','Baltimore, MD','Washington, DC','Richmond, VA','Virginia Beach, VA','Charleston, SC','Savannah, GA','Boise, ID','Salt Lake City, UT','Reno, NV','Tucson, AZ','Albuquerque, NM','Oklahoma City, OK','Tulsa, OK','Kansas City, MO','St. Louis, MO','Omaha, NE','Des Moines, IA','Milwaukee, WI','Louisville, KY','Memphis, TN','Birmingham, AL','New Orleans, LA','Hartford, CT','New Haven, CT','Stamford, CT','Providence, RI','Portland, ME','Burlington, VT','Manchester, NH','Springfield, MA','Lowell, MA','Haverhill, MA','Salem, MA','Beverly, MA','Gloucester, MA','Newburyport, MA'];
+let selectedMarkets = [];
+
+function marketSearch(q) {
+  const box = document.getElementById('market-suggestions');
+  if (!q || q.length < 2) { box.style.display = 'none'; return; }
+  const matches = US_CITIES.filter(c => c.toLowerCase().includes(q.toLowerCase()) && !selectedMarkets.includes(c)).slice(0, 6);
+  if (!matches.length) { box.style.display = 'none'; return; }
+  box.innerHTML = matches.map(m => `<div style="padding:10px 14px;cursor:pointer;font-size:14px;border-bottom:1px solid var(--bg3)" onmousedown="addMarketTag('${m}')">${m}</div>`).join('');
+  box.style.display = 'block';
+}
+
+function addMarketTag(val) {
+  val = val.trim();
+  // Try to match against known cities
+  const match = US_CITIES.find(c => c.toLowerCase() === val.toLowerCase()) || val;
+  if (!match || selectedMarkets.includes(match)) return;
+  selectedMarkets.push(match);
+  renderMarketTags();
+  document.getElementById('sm').value = '';
+  document.getElementById('market-suggestions').style.display = 'none';
+}
+
+function removeMarketTag(val) {
+  selectedMarkets = selectedMarkets.filter(m => m !== val);
+  renderMarketTags();
+}
+
+function renderMarketTags() {
+  const container = document.getElementById('market-tags');
+  container.innerHTML = selectedMarkets.map(m => `<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:var(--accent-light);color:var(--accent);border-radius:20px;font-size:13px;font-weight:500">${m}<button onclick="removeMarketTag('${m}')" style="background:none;border:none;cursor:pointer;color:var(--accent);font-size:14px;padding:0 2px;line-height:1">×</button></span>`).join('');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#sm') && !e.target.closest('#market-suggestions')) {
+    document.getElementById('market-suggestions')?.style && (document.getElementById('market-suggestions').style.display = 'none');
+  }
+});
+
+// ===== PROFILE EDITOR MODAL =====
+function showProfileEditor() {
+  const ov = document.createElement('div');
+  ov.id = 'profile-modal';
+  ov.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:200;display:flex;align-items:flex-end;justify-content:center';
+  ov.onclick = e => { if(e.target===ov) ov.remove(); };
+  const cd = document.createElement('div');
+  cd.style.cssText = 'background:var(--bg);border-radius:14px 14px 0 0;padding:24px 20px 32px;width:100%;max-width:600px;max-height:80vh;overflow-y:auto';
+  cd.innerHTML = `
+    <div style="width:36px;height:4px;background:var(--bg3);border-radius:2px;margin:0 auto 16px"></div>
+    <div style="font-family:var(--serif);font-size:20px;margin-bottom:4px">Edit your profile</div>
+    <div style="font-size:13px;color:var(--ink3);margin-bottom:20px">This appears on your website and outgoing messages.</div>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+      <div style="width:64px;height:64px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:500;font-size:22px">${(S.agent.firstName||'')[0]||''}${(S.agent.lastName||'')[0]||''}</div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:500;margin-bottom:6px">Profile photo</div><div style="font-size:12px;color:var(--ink3)">Upload a headshot — warm and professional.</div><button class="btn btn-outline btn-sm" style="margin-top:6px">Upload photo</button></div>
+    </div>
+    <div class="afl"><label>First name</label><input id="pf-first" value="${S.agent.firstName||''}"></div>
+    <div class="afl"><label>Last name</label><input id="pf-last" value="${S.agent.lastName||''}"></div>
+    <div class="afl"><label>Phone</label><input id="pf-phone" value="${S.agent.phone||''}"></div>
+    <div class="afl"><label>Brokerage</label><input id="pf-brokerage" value="${S.agent.brokerage||''}"></div>
+    <div class="afl"><label>Bio</label><textarea id="pf-bio" style="width:100%;padding:10px;border:1px solid var(--bg3);border-radius:var(--radius);font-family:var(--sans);font-size:14px;min-height:80px;resize:vertical" placeholder="1-2 sentences about you and your market...">${S.agent.bio||''}</textarea></div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-outline" style="flex:1" onclick="document.getElementById('profile-modal').remove()">Cancel</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveProfile()">Save changes</button>
+    </div>`;
+  ov.appendChild(cd);
+  document.body.appendChild(ov);
+}
+
+async function saveProfile() {
+  try {
+    const updates = {
+      firstName: document.getElementById('pf-first').value.trim(),
+      lastName: document.getElementById('pf-last').value.trim(),
+      phone: document.getElementById('pf-phone').value.trim(),
+      brokerage: document.getElementById('pf-brokerage').value.trim()
+    };
+    await api.patch('/me', updates);
+    Object.assign(S.agent, updates);
+    document.getElementById('profile-modal').remove();
+    rToday();
+  } catch(e) { alert(e.message); }
+}
+
+// ===== CONTACT IMPORT FLOW =====
+function showImportFlow() {
+  const ov = document.createElement('div');
+  ov.id = 'import-modal';
+  ov.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:200;display:flex;align-items:flex-end;justify-content:center';
+  ov.onclick = e => { if(e.target===ov) ov.remove(); };
+  const cd = document.createElement('div');
+  cd.style.cssText = 'background:var(--bg);border-radius:14px 14px 0 0;padding:24px 20px 32px;width:100%;max-width:600px;max-height:85vh;overflow-y:auto';
+  cd.innerHTML = `
+    <div style="width:36px;height:4px;background:var(--bg3);border-radius:2px;margin:0 auto 16px"></div>
+    <div style="font-family:var(--serif);font-size:20px;margin-bottom:4px">Import your contacts</div>
+    <div style="font-size:13px;color:var(--ink3);margin-bottom:20px;line-height:1.6">Get everyone you know into the system. Friends, family, classmates, coworkers — anyone you've had a real conversation with.</div>
+
+    <div style="background:#fff;border:1px solid var(--bg3);border-radius:var(--radius-lg);padding:16px;margin-bottom:12px">
+      <div style="font-size:14px;font-weight:500;margin-bottom:4px">Upload a CSV file</div>
+      <div style="font-size:12px;color:var(--ink3);margin-bottom:12px">Export contacts from your phone, Gmail, or Outlook as a CSV. We'll match columns automatically.</div>
+      <input type="file" id="csv-upload" accept=".csv,.txt" onchange="parseCSV(this)" style="font-size:13px">
+      <div id="csv-preview" style="display:none;margin-top:12px"></div>
+    </div>
+
+    <div style="background:#fff;border:1px solid var(--bg3);border-radius:var(--radius-lg);padding:16px;margin-bottom:12px">
+      <div style="font-size:14px;font-weight:500;margin-bottom:4px">Quick add</div>
+      <div style="font-size:12px;color:var(--ink3);margin-bottom:12px">Paste names and numbers — one contact per line. Format: Name, Phone</div>
+      <textarea id="bulk-add" placeholder="Rachel Medeiros, 508-555-0211&#10;Tom Callahan, 617-555-0334&#10;Ava Patel, 508-555-0887" style="width:100%;padding:10px;border:1px solid var(--bg3);border-radius:var(--radius);font-family:var(--sans);font-size:13px;min-height:120px;resize:vertical"></textarea>
+      <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="bulkAddContacts()">Add contacts</button>
+    </div>
+
+    <div style="padding:12px;background:var(--accent-light);border-radius:var(--radius);font-size:12px;color:var(--accent);line-height:1.6;margin-bottom:12px">
+      <strong>Tip:</strong> On iPhone, go to Contacts → tap a group → Share → export as vCard or CSV. On Gmail, go to contacts.google.com → Export → CSV.
+    </div>
+
+    <button class="btn btn-outline" style="width:100%" onclick="document.getElementById('import-modal').remove()">Done</button>`;
+  ov.appendChild(cd);
+  document.body.appendChild(ov);
+}
+
+function parseCSV(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async function(e) {
+    const lines = e.target.result.split('\n').filter(l => l.trim());
+    if (lines.length < 2) { alert('CSV appears empty.'); return; }
+    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+    const firstIdx = headers.findIndex(h => h.includes('first') || h.includes('name'));
+    const lastIdx = headers.findIndex(h => h.includes('last') || h.includes('surname'));
+    const phoneIdx = headers.findIndex(h => h.includes('phone') || h.includes('mobile') || h.includes('tel'));
+    const emailIdx = headers.findIndex(h => h.includes('email') || h.includes('mail'));
+
+    const contacts = [];
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(',').map(c => c.trim().replace(/^"|"$/g, ''));
+      const first = cols[firstIdx] || cols[0] || '';
+      const last = lastIdx >= 0 ? cols[lastIdx] : '';
+      if (!first) continue;
+      contacts.push({ firstName: first, lastName: last, phone: phoneIdx >= 0 ? cols[phoneIdx] : '', email: emailIdx >= 0 ? cols[emailIdx] : '' });
+    }
+
+    const preview = document.getElementById('csv-preview');
+    preview.style.display = 'block';
+    preview.innerHTML = `<div style="font-size:13px;font-weight:500;margin-bottom:8px">Found ${contacts.length} contacts</div><div style="max-height:120px;overflow-y:auto;font-size:12px;color:var(--ink2)">${contacts.slice(0, 5).map(c => `${c.firstName} ${c.lastName} ${c.phone ? '· ' + c.phone : ''}`).join('<br>')}${contacts.length > 5 ? '<br>... and ' + (contacts.length - 5) + ' more' : ''}</div><button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="importCSVContacts()">Import all ${contacts.length} contacts</button>`;
+    preview.dataset.contacts = JSON.stringify(contacts);
+  };
+  reader.readAsText(file);
+}
+
+async function importCSVContacts() {
+  const data = JSON.parse(document.getElementById('csv-preview').dataset.contacts || '[]');
+  let added = 0;
+  for (const c of data) {
+    try {
+      await api.post('/contacts', { firstName: c.firstName, lastName: c.lastName, phone: c.phone, email: c.email, relationship: 'Imported', tags: ['imported'] });
+      added++;
+    } catch(e) {}
+  }
+  S.contacts = await api.get('/contacts');
+  S.pipeline = await api.get('/pipeline');
+  alert(`Imported ${added} contacts!`);
+  document.getElementById('import-modal').remove();
+  rPipe();
+}
+
+async function bulkAddContacts() {
+  const text = document.getElementById('bulk-add').value.trim();
+  if (!text) { alert('Paste some contacts first.'); return; }
+  const lines = text.split('\n').filter(l => l.trim());
+  let added = 0;
+  for (const line of lines) {
+    const parts = line.split(',').map(p => p.trim());
+    const nameParts = (parts[0] || '').split(' ');
+    const first = nameParts[0] || '';
+    const last = nameParts.slice(1).join(' ') || '';
+    if (!first) continue;
+    try {
+      await api.post('/contacts', { firstName: first, lastName: last, phone: parts[1] || '', relationship: 'Sphere', tags: ['sphere'] });
+      added++;
+    } catch(e) {}
+  }
+  S.contacts = await api.get('/contacts');
+  S.pipeline = await api.get('/pipeline');
+  alert(`Added ${added} contacts!`);
+  document.getElementById('import-modal').remove();
+  rPipe();
+}
+
+// ===== CLICKABLE TASK ACTIONS =====
+// Override task rendering to make setup tasks clickable
+const origRToday = rToday;
+rToday = function() {
+  origRToday();
+  // After render, attach click handlers to actionable tasks
+  document.querySelectorAll('.tct').forEach(el => {
+    const text = el.textContent.toLowerCase();
+    if (text.includes('import') && text.includes('contact')) {
+      el.style.cursor = 'pointer';
+      el.style.textDecoration = 'underline';
+      el.style.textDecorationColor = 'var(--accent)';
+      el.onclick = (e) => { e.stopPropagation(); showImportFlow(); };
+    } else if (text.includes('profile') && (text.includes('photo') || text.includes('bio'))) {
+      el.style.cursor = 'pointer';
+      el.style.textDecoration = 'underline';
+      el.style.textDecorationColor = 'var(--accent)';
+      el.onclick = (e) => { e.stopPropagation(); showProfileEditor(); };
+    } else if (text.includes('review') && text.includes('website')) {
+      el.style.cursor = 'pointer';
+      el.style.textDecoration = 'underline';
+      el.style.textDecorationColor = 'var(--accent)';
+      el.onclick = (e) => { e.stopPropagation(); alert('Your website is live at: ' + (S.agent.firstName||'you').toLowerCase() + '.groundwork.ai\n\n(In production, this opens your generated website in a new tab.)'); };
+    } else if (text.includes('approve') && (text.includes('market report') || text.includes('content') || text.includes('social post') || text.includes('newsletter'))) {
+      el.style.cursor = 'pointer';
+      el.style.textDecoration = 'underline';
+      el.style.textDecorationColor = 'var(--accent)';
+      el.onclick = (e) => { e.stopPropagation(); navTo('content'); };
+    } else if (text.includes('market snapshot') || text.includes('market data') || text.includes('study your market')) {
+      el.style.cursor = 'pointer';
+      el.style.textDecoration = 'underline';
+      el.style.textDecorationColor = 'var(--accent)';
+      el.onclick = (e) => { e.stopPropagation(); navTo('market'); };
+    } else if (text.includes('add') && text.includes('contact') && text.includes('groundwork')) {
+      el.style.cursor = 'pointer';
+      el.style.textDecoration = 'underline';
+      el.style.textDecorationColor = 'var(--accent)';
+      el.onclick = (e) => { e.stopPropagation(); navTo('pipeline'); setTimeout(sAC, 300); };
+    }
+  });
+};
+
+// ===== SIGNUP — use selectedMarkets =====
+const origDoSignup = doSignup;
+doSignup = async function() {
+  const f = document.getElementById('sf').value.trim();
+  const e = document.getElementById('se').value.trim();
+  const p = document.getElementById('sp').value;
+  const err = document.getElementById('ae');
+  if (!f || !e || !p) { err.textContent = 'Fill in all fields.'; err.style.display = 'block'; return; }
+  if (p.length < 6) { err.textContent = 'Password: 6+ characters.'; err.style.display = 'block'; return; }
+  // Use selectedMarkets from typeahead, or fallback to text field
+  const markets = selectedMarkets.length ? selectedMarkets : document.getElementById('sm').value.trim().split(',').map(x=>x.trim()).filter(Boolean);
+  try {
+    const data = await api.post('/register', { email: e, password: p, firstName: f, markets });
+    api.token = data.token;
+    localStorage.setItem('gw_token', data.token);
+    showScreen('app');
+  } catch(ex) { err.textContent = ex.message; err.style.display = 'block'; }
+};
 </script>
 </body>
 </html>
