@@ -5,16 +5,6 @@ const { initDB, getDB, save, hashPassword, verifyPassword, generateToken, seedUs
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
-app.get('/debug', (req, res) => {
-  const fs = require('fs');
-  const dir = path.join(__dirname, 'public');
-  try {
-    const files = fs.readdirSync(dir);
-    res.json({ cwd: process.cwd(), dirname: __dirname, publicDir: dir, files });
-  } catch(e) {
-    res.json({ cwd: process.cwd(), dirname: __dirname, publicDir: dir, error: e.message });
-  }
-});
 
 // ===== AUTH MIDDLEWARE =====
 function auth(req, res, next) {
