@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Groundwork — Admin Monitor</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --border: #2a2d3e;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --accent: #6366f1;
+      --accent-dim: rgba(99,102,241,0.15);
+      --green: #22c55e;
+      --green-dim: rgba(34,197,94,0.15);
+      --yellow: #f59e0b;
+      --yellow-dim: rgba(245,158,11,0.15);
+      --red: #ef4444;
+      --red-dim: rgba(239,68,68,0.15);
+      --blue: #3b82f6;
+      --blue-dim: rgba(59,130,246,0.15);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+
+    /* Header */
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+    .logo { font-size: 16px; font-weight: 700; letter-spacing: -0.5px; }
+    .logo .brand { color: var(--accent); }
+    .logo .sep { color: var(--border); margin: 0 8px; font-weight: 300; }
+    .logo .sub { color: var(--muted); font-weight: 400; font-size: 13px; }
+    .header-right { display: flex; align-items: center; gap: 14px; }
+    .pulse { display: flex; align-items: center; gap: 6px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+    .dot.offline { background: var(--red); }
+    .dot.online { animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+    .last-updated { color: var(--muted); font-size: 12px; }
+    .refresh-btn { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(99,102,241,0.3); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500; transition: background 0.15s; }
+    .refresh-btn:hover { background: var(--accent); color: white; }
+    .countdown { font-size: 11px; color: var(--muted); }
+
+    /* Layout */
+    main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+    section { margin-bottom: 28px; }
+    .section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 12px; }
+
+    /* Stat cards */
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+    .card-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 8px; }
+    .card-value { font-size: 30px; font-weight: 700; line-height: 1; letter-spacing: -1px; }
+    .card-sub { font-size: 12px; color: var(--muted); margin-top: 5px; }
+    .card.accent .card-value { color: var(--accent); }
+    .card.green .card-value { color: var(--green); }
+    .card.blue .card-value { color: var(--blue); }
+    .card.yellow .card-value { color: var(--yellow); }
+
+    /* Health grid */
+    .health-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+    .health-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .health-key { font-size: 11px; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .health-val { font-size: 15px; font-weight: 600; }
+    .health-val.online { color: var(--green); }
+
+    /* Memory bar */
+    .mem-bar-wrap { margin-top: 6px; background: var(--border); border-radius: 4px; height: 4px; overflow: hidden; }
+    .mem-bar { height: 100%; border-radius: 4px; background: var(--accent); transition: width 0.3s; }
+
+    /* Two column layout */
+    .two-col { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; }
+    @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* Table */
+    .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); border-bottom: 1px solid var(--border); white-space: nowrap; }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    .user-name { font-weight: 500; font-size: 13px; }
+    .user-email { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+    .badge.growth { background: var(--accent-dim); color: #818cf8; }
+    .badge.pro { background: var(--yellow-dim); color: var(--yellow); }
+    .num { font-size: 13px; font-weight: 500; }
+    .dim { color: var(--muted); font-size: 12px; }
+
+    /* Activity feed */
+    .feed { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; max-height: 480px; overflow-y: auto; }
+    .feed::-webkit-scrollbar { width: 4px; }
+    .feed::-webkit-scrollbar-track { background: transparent; }
+    .feed::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    .feed-item { padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 10px; }
+    .feed-item:last-child { border-bottom: none; }
+    .feed-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; margin-top: 1px; }
+    .feed-icon.contact { background: var(--accent-dim); }
+    .feed-icon.content { background: var(--green-dim); }
+    .feed-icon.crm { background: var(--yellow-dim); }
+    .feed-icon.system { background: var(--blue-dim); }
+    .feed-body { flex: 1; min-width: 0; }
+    .feed-text { font-size: 13px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .feed-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* Auth modal */
+    .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(4px); }
+    .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 32px; width: 380px; }
+    .modal-icon { font-size: 28px; margin-bottom: 14px; }
+    .modal h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+    .modal p { color: var(--muted); font-size: 13px; line-height: 1.5; margin-bottom: 22px; }
+    .modal input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 10px 12px; border-radius: 8px; font-size: 14px; outline: none; margin-bottom: 10px; transition: border-color 0.15s; }
+    .modal input:focus { border-color: var(--accent); }
+    .modal-error { color: var(--red); font-size: 12px; margin-bottom: 10px; min-height: 18px; }
+    .modal button { width: 100%; background: var(--accent); color: white; border: none; padding: 11px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
+    .modal button:hover { opacity: 0.88; }
+
+    /* Misc */
+    .empty { color: var(--muted); font-size: 13px; padding: 24px; text-align: center; }
+    .skeleton { background: var(--border); border-radius: 4px; animation: shimmer 1.4s ease-in-out infinite; }
+    @keyframes shimmer { 0%,100% { opacity:0.5; } 50% { opacity:1; } }
+  </style>
+</head>
+<body>
+
+<!-- Auth modal -->
+<div id="authModal" class="modal-bg">
+  <div class="modal">
+    <div class="modal-icon">🔐</div>
+    <h2>Admin Access</h2>
+    <p>Enter the admin secret to access the monitoring dashboard. Check your server startup logs if you haven't set one.</p>
+    <input type="password" id="secretInput" placeholder="Admin secret" autocomplete="off" />
+    <div class="modal-error" id="authError"></div>
+    <button id="loginBtn" onclick="login()">Access Dashboard</button>
+  </div>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="logo">
+    Ground<span class="brand">work</span>
+    <span class="sep">/</span>
+    <span class="sub">Monitor</span>
+  </div>
+  <div class="header-right">
+    <div class="pulse">
+      <div class="dot" id="statusDot"></div>
+      <span class="last-updated" id="lastUpdated">Connecting...</span>
+    </div>
+    <span class="countdown" id="countdown"></span>
+    <button class="refresh-btn" onclick="loadAll()">↺ Refresh</button>
+  </div>
+</header>
+
+<main>
+  <!-- Stats Overview -->
+  <section>
+    <div class="section-title">Overview</div>
+    <div class="cards" id="statsCards">
+      <div class="card"><div class="card-label">Loading</div><div class="card-value skeleton" style="width:60px;height:30px;"></div></div>
+    </div>
+  </section>
+
+  <!-- System Health -->
+  <section>
+    <div class="section-title">System Health</div>
+    <div class="health-grid" id="healthGrid">
+      <div class="health-item"><div class="health-key">Status</div><div class="health-val skeleton" style="width:80px;height:20px;"></div></div>
+    </div>
+  </section>
+
+  <!-- Users + Activity -->
+  <div class="two-col">
+    <section>
+      <div class="section-title">Users</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Plan</th>
+              <th>Contacts</th>
+              <th>Events</th>
+              <th>Joined</th>
+            </tr>
+          </thead>
+          <tbody id="usersBody">
+            <tr><td colspan="5" class="empty">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">Recent Activity</div>
+      <div class="feed" id="activityFeed">
+        <div class="empty">Loading...</div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+let secret = sessionStorage.getItem('adminSecret') || '';
+let refreshTimer, countdownTimer, countdownVal = 30;
+
+const ICONS = { contact: '👤', content: '📄', crm: '📞', system: '⚙️' };
+
+/* ── Auth ── */
+async function login() {
+  const val = document.getElementById('secretInput').value.trim();
+  if (!val) return;
+  const btn = document.getElementById('loginBtn');
+  btn.textContent = 'Checking...';
+  btn.disabled = true;
+  try {
+    const r = await fetch('/admin/health', { headers: { 'x-admin-secret': val } });
+    if (r.ok) {
+      secret = val;
+      sessionStorage.setItem('adminSecret', val);
+      document.getElementById('authModal').style.display = 'none';
+      loadAll();
+      startAutoRefresh();
+    } else {
+      document.getElementById('authError').textContent = 'Incorrect secret — check server logs.';
+    }
+  } catch (e) {
+    document.getElementById('authError').textContent = 'Could not reach server.';
+  }
+  btn.textContent = 'Access Dashboard';
+  btn.disabled = false;
+}
+document.getElementById('secretInput').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+
+/* ── API ── */
+async function apiFetch(path) {
+  const r = await fetch(path, { headers: { 'x-admin-secret': secret } });
+  if (!r.ok) throw new Error(r.status);
+  return r.json();
+}
+
+/* ── Formatters ── */
+function fmtBytes(b) {
+  if (!b) return '0 B';
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+  return (b / 1048576).toFixed(1) + ' MB';
+}
+function fmtUptime(s) {
+  const d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60);
+  if (d > 0) return `${d}d ${h}h`;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m ${s % 60}s`;
+}
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+function fmtAgo(d) {
+  if (!d) return '—';
+  const diff = Date.now() - new Date(d);
+  if (diff < 60000) return 'just now';
+  if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+  if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+  return Math.floor(diff / 86400000) + 'd ago';
+}
+
+/* ── Loaders ── */
+async function loadHealth() {
+  const d = await apiFetch('/admin/health');
+  const pct = Math.round((d.memory.heapUsed / d.memory.heapTotal) * 100);
+  document.getElementById('healthGrid').innerHTML = `
+    <div class="health-item">
+      <div class="health-key">Status</div>
+      <div class="health-val online">● Online</div>
+    </div>
+    <div class="health-item">
+      <div class="health-key">Uptime</div>
+      <div class="health-val">${fmtUptime(d.uptime)}</div>
+    </div>
+    <div class="health-item">
+      <div class="health-key">Node.js</div>
+      <div class="health-val">${d.nodeVersion}</div>
+    </div>
+    <div class="health-item">
+      <div class="health-key">Heap Used / Total</div>
+      <div class="health-val">${fmtBytes(d.memory.heapUsed)}<span style="color:var(--muted);font-weight:400"> / ${fmtBytes(d.memory.heapTotal)}</span></div>
+      <div class="mem-bar-wrap"><div class="mem-bar" style="width:${pct}%"></div></div>
+    </div>
+    <div class="health-item">
+      <div class="health-key">RSS Memory</div>
+      <div class="health-val">${fmtBytes(d.memory.rss)}</div>
+    </div>
+    <div class="health-item">
+      <div class="health-key">Platform / PID</div>
+      <div class="health-val">${d.platform} <span style="color:var(--muted);font-weight:400">#${d.pid}</span></div>
+    </div>
+  `;
+  setStatus(true);
+}
+
+async function loadStats() {
+  const d = await apiFetch('/admin/stats');
+  const hot = d.contacts?.byStatus?.hot || 0;
+  const warm = d.contacts?.byStatus?.warm || 0;
+  const published = d.content?.byStatus?.published || 0;
+  document.getElementById('statsCards').innerHTML = `
+    <div class="card accent">
+      <div class="card-label">Total Users</div>
+      <div class="card-value">${d.users?.total ?? 0}</div>
+      <div class="card-sub">+${d.users?.newLast7Days ?? 0} this week</div>
+    </div>
+    <div class="card blue">
+      <div class="card-label">Active Sessions</div>
+      <div class="card-value">${d.users?.activeSessions ?? 0}</div>
+      <div class="card-sub">live tokens</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Total Contacts</div>
+      <div class="card-value">${d.contacts?.total ?? 0}</div>
+      <div class="card-sub">${hot} hot · ${warm} warm</div>
+    </div>
+    <div class="card green">
+      <div class="card-label">Content</div>
+      <div class="card-value">${d.content?.total ?? 0}</div>
+      <div class="card-sub">${published} published</div>
+    </div>
+    <div class="card yellow">
+      <div class="card-label">CRM Activities</div>
+      <div class="card-value">${d.crmActivities?.total ?? 0}</div>
+      <div class="card-sub">logged interactions</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Tasks Done</div>
+      <div class="card-value">${d.tasks?.total ?? 0}</div>
+      <div class="card-sub">across all users</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Activity Log</div>
+      <div class="card-value">${d.activity?.total ?? 0}</div>
+      <div class="card-sub">total entries</div>
+    </div>
+  `;
+}
+
+async function loadUsers() {
+  const data = await apiFetch('/admin/users');
+  const tbody = document.getElementById('usersBody');
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty">No users yet</td></tr>'; return; }
+  tbody.innerHTML = data.map(u => `
+    <tr>
+      <td>
+        <div class="user-name">${esc(u.firstName)} ${esc(u.lastName)}</div>
+        <div class="user-email">${esc(u.email)}</div>
+      </td>
+      <td><span class="badge ${esc(u.plan)}">${esc(u.plan)}</span></td>
+      <td class="num">${u.contactCount}</td>
+      <td class="num">${u.activityCount}</td>
+      <td class="dim">${fmtDate(u.createdAt)}</td>
+    </tr>
+  `).join('');
+}
+
+async function loadActivity() {
+  const data = await apiFetch('/admin/activity');
+  const feed = document.getElementById('activityFeed');
+  if (!data.length) { feed.innerHTML = '<div class="empty">No activity yet</div>'; return; }
+  feed.innerHTML = data.slice(0, 60).map(a => `
+    <div class="feed-item">
+      <div class="feed-icon ${esc(a.type)}">${ICONS[a.type] || '·'}</div>
+      <div class="feed-body">
+        <div class="feed-text">${esc(a.text)}</div>
+        <div class="feed-meta">${esc(a.email || 'system')} · ${fmtAgo(a.createdAt)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ── Helpers ── */
+function esc(s) {
+  if (s == null) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function setStatus(online) {
+  const dot = document.getElementById('statusDot');
+  dot.className = 'dot ' + (online ? 'online' : 'offline');
+}
+
+/* ── Load all ── */
+async function loadAll() {
+  resetCountdown();
+  try {
+    await Promise.all([loadHealth(), loadStats(), loadUsers(), loadActivity()]);
+    document.getElementById('lastUpdated').textContent = 'Updated ' + new Date().toLocaleTimeString();
+    setStatus(true);
+  } catch (e) {
+    setStatus(false);
+    document.getElementById('lastUpdated').textContent = 'Error — retrying in 30s';
+  }
+}
+
+/* ── Auto-refresh ── */
+function resetCountdown() {
+  countdownVal = 30;
+  clearInterval(countdownTimer);
+  countdownTimer = setInterval(() => {
+    countdownVal--;
+    document.getElementById('countdown').textContent = countdownVal > 0 ? `auto in ${countdownVal}s` : '';
+  }, 1000);
+}
+
+function startAutoRefresh() {
+  clearInterval(refreshTimer);
+  refreshTimer = setInterval(loadAll, 30000);
+}
+
+/* ── Init ── */
+if (secret) {
+  fetch('/admin/health', { headers: { 'x-admin-secret': secret } }).then(r => {
+    if (r.ok) {
+      document.getElementById('authModal').style.display = 'none';
+      loadAll();
+      startAutoRefresh();
+    } else {
+      sessionStorage.removeItem('adminSecret');
+      secret = '';
+    }
+  }).catch(() => {});
+}
+</script>
+</body>
+</html>

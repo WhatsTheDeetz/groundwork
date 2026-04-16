@@ -16,6 +16,14 @@ function auth(req, res, next) {
   next();
 }
 
+// Admin auth middleware
+const ADMIN_SECRET = process.env.ADMIN_SECRET || 'groundwork-admin-2026';
+function adminAuth(req, res, next) {
+  const secret = req.headers['x-admin-secret'] || req.query.secret;
+  if (secret !== ADMIN_SECRET) return res.status(401).json({error:'Unauthorized'});
+  next();
+}
+
 // === AUTH ===
 app.post('/api/register', (req, res) => {
   const {email,password,firstName,lastName,phone,brokerage,markets,bio,linkedinUrl} = req.body;
@@ -269,6 +277,70 @@ app.get('/api/coaching', (req, res) => {
   });
 });
 
+// === ADMIN MONITORING ===
+app.get('/admin/health', adminAuth, (req, res) => {
+  const mem = process.memoryUsage();
+  res.json({
+    status: 'ok',
+    uptime: Math.floor(process.uptime()),
+    timestamp: new Date().toISOString(),
+    nodeVersion: process.version,
+    platform: process.platform,
+    pid: process.pid,
+    memory: { rss: mem.rss, heapUsed: mem.heapUsed, heapTotal: mem.heapTotal, external: mem.external }
+  });
+});
+
+app.get('/admin/stats', adminAuth, (req, res) => {
+  const db = getDB();
+  const q = (sql) => { const r = db.exec(sql); return r.length ? r[0].values[0][0] : 0; };
+  const byGroup = (sql) => { const r = db.exec(sql); const o = {}; if (r.length) r[0].values.forEach(row => { o[row[0]] = row[1]; }); return o; };
+  res.json({
+    users: {
+      total: q('SELECT COUNT(*) FROM users'),
+      newLast7Days: q("SELECT COUNT(*) FROM users WHERE created_at >= datetime('now', '-7 days')"),
+      activeSessions: q('SELECT COUNT(*) FROM sessions')
+    },
+    contacts: { total: q('SELECT COUNT(*) FROM contacts'), byStatus: byGroup('SELECT status, COUNT(*) FROM contacts GROUP BY status') },
+    content: { total: q('SELECT COUNT(*) FROM content'), byStatus: byGroup('SELECT status, COUNT(*) FROM content GROUP BY status') },
+    crmActivities: { total: q('SELECT COUNT(*) FROM contact_activities') },
+    tasks: { total: q('SELECT COUNT(*) FROM tasks_completed') },
+    activity: { total: q('SELECT COUNT(*) FROM activity') }
+  });
+});
+
+app.get('/admin/users', adminAuth, (req, res) => {
+  const db = getDB();
+  const r = db.exec(`
+    SELECT u.id, u.email, u.first_name, u.last_name, u.brokerage, u.plan, u.created_at, u.trial_ends_at,
+      (SELECT COUNT(*) FROM contacts c WHERE c.user_id=u.id),
+      (SELECT COUNT(*) FROM content cn WHERE cn.user_id=u.id),
+      (SELECT COUNT(*) FROM activity a WHERE a.user_id=u.id),
+      (SELECT MAX(created_at) FROM sessions s WHERE s.user_id=u.id)
+    FROM users u ORDER BY u.created_at DESC
+  `);
+  if (!r.length) return res.json([]);
+  res.json(r[0].values.map(row => ({
+    id: row[0], email: row[1], firstName: row[2], lastName: row[3],
+    brokerage: row[4], plan: row[5], createdAt: row[6], trialEndsAt: row[7],
+    contactCount: row[8], contentCount: row[9], activityCount: row[10], lastSession: row[11]
+  })));
+});
+
+app.get('/admin/activity', adminAuth, (req, res) => {
+  const db = getDB();
+  const r = db.exec(`
+    SELECT a.id, a.user_id, u.email, u.first_name, a.type, a.text, a.created_at
+    FROM activity a LEFT JOIN users u ON u.id=a.user_id
+    ORDER BY a.created_at DESC LIMIT 100
+  `);
+  if (!r.length) return res.json([]);
+  res.json(r[0].values.map(row => ({
+    id: row[0], userId: row[1], email: row[2], firstName: row[3],
+    type: row[4], text: row[5], createdAt: row[6]
+  })));
+});
+
 // Debug
 app.get('/debug', (req, res) => {
   const fs = require('fs');
@@ -281,6 +353,11 @@ app.get('/debug', (req, res) => {
 async function start() {
   await initDB();
   const PORT = process.env.PORT||3000;
-  app.listen(PORT,'0.0.0.0',()=>{console.log(`Groundwork server running on port ${PORT}`);console.log(`Open: http://localhost:${PORT}`)});
+  app.listen(PORT,'0.0.0.0',()=>{
+    console.log(`Groundwork server running on port ${PORT}`);
+    console.log(`App:     http://localhost:${PORT}`);
+    console.log(`Monitor: http://localhost:${PORT}/monitor.html`);
+    console.log(`Admin secret: ${ADMIN_SECRET}`);
+  });
 }
 start();
